@@ -37,8 +37,6 @@ The software currently does not work well with Keras 2.X because of image dimens
 pip install keras==1.2.2 theano==0.9.0 pySMT z3 stopit tensorflow
 ```
 
-There are comparability issues with OpenCV. Please use version 2.4.8.
-
 The `z3` pacakge needs to be properly installed. You can follow the instruction: https://github.com/Z3Prover/z3, or run the following commands (tested on Mac OS): 
 
 ```bash
