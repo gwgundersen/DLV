@@ -16,7 +16,7 @@ Please refer to the original papers for more details about the software:
 Before continuing, please install [Anaconda](https://docs.anaconda.com/anaconda/install/), a package manager, if needed. Currently, only Python 2.7 is supported. To create a Python 2.X specific Anaconda environment named `dlv`, do:
 
 ```bash
-conda create --name dlv python=2.7 anaconda
+conda create --name dlv python=2.7 pip
 ```
 
 Then activate the `dlv` environment:
@@ -28,15 +28,13 @@ source activate dlv
 ### Install dependencies
            
 ```bash
-conda install opencv numpy scikit-image cvxopt
-pip install stopit
+conda install opencv=2.4.8 numpy scikit-image cvxopt
 ```
 
 The software currently does not work well with Keras 2.X because of image dimension ordering problems. Please use a previous 1.X version:
 
 ```bash
-pip install keras==1.2.2
-pip install pySMT z3
+pip install keras==1.2.2 theano==0.9.0 pySMT z3 stopit tensorflow
 ```
 
 There are comparability issues with OpenCV. Please use version 2.4.8.
@@ -54,7 +52,7 @@ sudo make install
            
 ### Check the backend of Keras
 
-The backend of Keras needs to be changed by editing the ~/.keras/keras.json file : 
+The backend of Keras needs to be changed by editing the `~/.keras/keras.json` file: 
 
 ```json
 "backend": "theano",
