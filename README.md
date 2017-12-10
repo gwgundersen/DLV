@@ -6,8 +6,8 @@ NB: This software is currently under active development. Please feel free to con
 
 Please refer to the original papers for more details about the software:
 
-- [Feature-Guided Black-Box Safety Testing of Deep Neural Networks](docs/DLV_TheoryPaper.pdf)
-- [Safety Verification of Deep Neural Networks](docs/DLV_MCTS_TwoPlayer.pdf)
+- [Feature-Guided Black-Box Safety Testing of Deep Neural Networks](docs/DLV_MCTS_TwoPlayer.pdf)
+- [Safety Verification of Deep Neural Networks](docs/DLV_TheoryPaper.pdf)
 
 ## Installation
 
