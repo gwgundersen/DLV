@@ -37,7 +37,7 @@ The software currently does not work well with Keras 2.X because of image dimens
 pip install keras==1.2.2 theano==0.9.0 pySMT z3 stopit tensorflow
 ```
 
-The `z3` pacakge needs to be properly installed. You can follow the instruction: https://github.com/Z3Prover/z3, or run the following commands (tested on Mac OS): 
+The `z3` pacakge needs to be properly installed. Please follow the instructions [here](https://github.com/Z3Prover/z3):
 
 ```bash
 git clone https://github.com/Z3Prover/z3.git

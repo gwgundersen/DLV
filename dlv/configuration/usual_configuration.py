@@ -78,8 +78,8 @@ def usual_configuration(dataset):
         checkingMode = "stepwise"
         
         # exit whenever an adversarial example is found
-        #exitWhen = "foundAll"
-        exitWhen = "foundFirst"
+        exitWhen = "foundAll"
+        #exitWhen = "foundFirst"
                 
         
     elif dataset == "gtsrb": 
