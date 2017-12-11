@@ -7,12 +7,10 @@ author: Xiaowei Huang
 
 import numpy as np
 import copy
-from scipy import ndimage
 from random import randint, random
 
-from configuration import * 
-from imageNet_network import addZeroPadding2D
-from networkBasics import * 
+from configuration.configuration import *
+from networks.networkBasics import *
 
     
 ############################################################

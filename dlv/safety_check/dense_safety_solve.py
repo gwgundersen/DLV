@@ -4,21 +4,15 @@
 author: Xiaowei Huang
 """
 
-import numpy as np
-import math
-import ast
-import copy
 import random
 import time
 import multiprocessing
-import stopit
 
 from z3 import *
 
 
-from basics import *
-from scipy import ndimage
-from configuration import *
+from basics.basics import *
+from configuration.configuration import *
 
 
 def dense_safety_solve(nfeatures,nfilters,filters,bias,input,activations,pcl,pgl,span,numSpan,pk):  

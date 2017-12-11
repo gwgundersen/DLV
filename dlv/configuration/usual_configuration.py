@@ -48,7 +48,7 @@ def usual_configuration(dataset):
 
         # which image to start with or work with 
         # from the database
-        startIndexOfImage = 4
+        startIndexOfImage = 1
         
         # the start layer to work from 
         startLayer = -1
@@ -78,8 +78,8 @@ def usual_configuration(dataset):
         checkingMode = "stepwise"
         
         # exit whenever an adversarial example is found
-        exitWhen = "foundAll"
-        #exitWhen = "foundFirst"
+        #exitWhen = "foundAll"
+        exitWhen = "foundFirst"
                 
         
     elif dataset == "gtsrb": 

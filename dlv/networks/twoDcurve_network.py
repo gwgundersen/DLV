@@ -8,16 +8,12 @@ import numpy as np
 import scipy.io as sio
 
 # keras
-from keras.models import Model, Sequential
+from keras.models import Model
 from keras.layers import Input, Dense
-import keras.optimizers
 from keras.models import model_from_json
 from keras import backend as K
 
-# visualisation
-#from keras.utils.visualize_util import plot
-#
-import basics 
+from basics import basics
 
 from twoDcurve import target_fun
 

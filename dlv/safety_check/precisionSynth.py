@@ -8,15 +8,14 @@ author: Xiaowei Huang
 
 import numpy as np
 import copy 
-from scipy import ndimage
 import math
 
 from conv_precision_solve import conv_precision_solve
 from dense_precision_solve import dense_precision_solve
 
-from networkBasics import * 
-from configuration import * 
-from basics import *
+from networks.networkBasics import *
+from configuration.configuration import *
+from basics.basics import *
 
 """
 The following is an overapproximation

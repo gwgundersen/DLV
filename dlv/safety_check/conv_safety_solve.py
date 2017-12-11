@@ -5,23 +5,14 @@ author: Xiaowei Huang
 """
 
 import numpy as np
-import math
-import ast
-import copy
 import random
 import time
 import multiprocessing
-import stopit
 
 from z3 import *
 
-#import display
-import mnist as mm
-
-from scipy import ndimage
-
-from configuration import *
-from basics import *
+from configuration.configuration import *
+from basics.basics import *
 
 inverseFunction = "point"
 

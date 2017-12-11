@@ -7,23 +7,19 @@ author: Xiaowei Huang
 """
 
 import numpy as np
-import time
-import os
 import copy
-import sys
-import operator
 import random
 import math
 
-from configuration import *
+from configuration.configuration import *
 
-from inputManipulation import applyManipulation
-from basics import *
+from basics.inputManipulation import applyManipulation
+from basics.basics import *
 
-from decisionTree import decisionTree
-from initialiseSiftKeypoints import initialiseSiftKeypointsTwoPlayer
+from basics.initialiseSiftKeypoints import initialiseSiftKeypointsTwoPlayer
 
 from re_training import re_training
+import operator
 
 
 effectiveConfidenceWhenChanging = 0 
@@ -300,7 +296,6 @@ class mcts_twoPlayer:
                 self.usefulPixels[dim] = 1
                 
     def getUsefulPixels(self,accDims,d): 
-        import operator
         sorted_accDims = sorted(self.accDims, key=operator.itemgetter(1), reverse=True)
         needed_accDims = sorted_accDims[:d-1]
         self.addUsefulPixels([x for (x,y) in needed_accDims])

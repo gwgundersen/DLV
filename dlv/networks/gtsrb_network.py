@@ -3,27 +3,15 @@
 from __future__ import print_function
 
 import scipy.io as sio
-import numpy as np
-import struct
-from array import array as pyarray
-from PIL import Image
 
-from keras.models import model_from_json, Model
+from keras.models import model_from_json
 from keras.models import Sequential
-from keras.layers import Input, Dense, Dropout, Activation, Flatten, UpSampling2D, Deconvolution2D
+from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Convolution2D, MaxPooling2D
 from keras import backend as K
-from keras.utils import np_utils
-
-# for mnist
-from keras.datasets import mnist
 
 from keras.optimizers import SGD
-from keras.callbacks import LearningRateScheduler, ModelCheckpoint
 
-
-
-#
 
 from gtsrb import * 
 

@@ -4,25 +4,17 @@ from __future__ import print_function
 
 import scipy.io as sio
 import numpy as np
-import struct
-from array import array as pyarray
-from PIL import Image
+import matplotlib.image as mpimg
 
-from keras.models import model_from_json, Model
+from keras.models import model_from_json
 from keras.models import Sequential
-from keras.layers import Input, Dense, Dropout, Activation, Flatten, UpSampling2D, Deconvolution2D, ZeroPadding2D
+from keras.layers import Dense, Dropout, Activation, Flatten, UpSampling2D, ZeroPadding2D
 from keras.layers import Convolution2D, MaxPooling2D
 from keras import backend as K
 from keras.utils import np_utils
-#from keras.layers.convolutional_transpose import Convolution2D_Transpose
 
 # for mnist
 from keras.datasets import mnist
-import tensorflow as tf
-
-#
-
-import mnist as mm
 
 
 batch_size = 128
@@ -524,11 +516,6 @@ def readImage(path):
 
     #print("ERROR: currently the reading of MNIST images are not correct, so the classifications are incorrect. ")
     
-    import matplotlib.pyplot as plt
-    import matplotlib.image as mpimg
-    import numpy as np
-    import PIL
-    from PIL import Image
     img=rgb2gray(mpimg.imread(path))
         
     img = img.resize((img_cols, img_rows))

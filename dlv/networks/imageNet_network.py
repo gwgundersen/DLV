@@ -8,14 +8,13 @@ import os
 
 from keras.models import model_from_json
 from keras.models import Sequential
-from keras.layers import Dense, Dropout, Activation, Flatten
+from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Convolution2D, MaxPooling2D, ZeroPadding2D
 from keras import backend as K
-from keras.utils import np_utils
 
-
-#
 from keras.optimizers import SGD
+import cv2
+
 
 directory_model_string = "networks"
 
@@ -157,9 +156,6 @@ def addZeroPadding2D(image):
     return image0
     
 def getImage(model,n_in_tests):
-
-    import cv2
-    
     directory = "%s/imageNet/ImageNet_Utils/n02084071/n02084071_urlimages/"%directory_model_string
     traffic = "%s/imageNet/traffic_signs/"%directory_model_string
     street = "%s/imageNet/street_sign/"%directory_model_string
@@ -184,9 +180,6 @@ def getImage(model,n_in_tests):
     
     
 def readImage(path):
-
-    import cv2
-    
     im = cv2.resize(cv2.imread(path), (224, 224)).astype(np.float32)
     im[:,:,0] -= 103.939
     im[:,:,1] -= 116.779

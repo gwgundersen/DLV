@@ -1,16 +1,10 @@
 #!/usr/bin/env python
 
 
-import sys
-from PIL import Image
-import numpy as np
-import imp
-from basics import *
-from networkBasics import *
-from configuration import * 
-from scipy.optimize import least_squares
-import matplotlib.pyplot as plt
-import matplotlib as mpl
+from basics.basics import *
+from networks.networkBasics import *
+from configuration.configuration import *
+import graphviz as gv
 
 
 class decisionTree:
@@ -58,10 +52,7 @@ class decisionTree:
         
     def show(self):
         print("decision tree: %s"%self.tree)
-        
-        import graphviz as gv
-        import networkx as nx
-        
+
         graph = gv.Digraph(format='svg')
         vNodes = {}
         for node in self.tree.keys():

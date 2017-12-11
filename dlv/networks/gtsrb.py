@@ -1,15 +1,16 @@
-import os, struct
-from array import array as pyarray
-from cvxopt.base import matrix
+import os
 import numpy as np
 
 from skimage import color, exposure, transform, io
 import glob
 import h5py
 
+import cv2
+import copy
+
+
 NUM_CLASSES = 43
 IMG_SIZE = 32
-
 
 
 def LABELS(index):
@@ -113,9 +114,6 @@ def read_dataset():
 def save(layer,image,filename):
     """
     """
-    import cv2
-    import copy
-
     image_cv = copy.deepcopy(image)
     image_cv = image_cv.transpose(1, 2, 0)
     

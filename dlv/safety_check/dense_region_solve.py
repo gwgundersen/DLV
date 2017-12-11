@@ -5,21 +5,13 @@ author: Xiaowei Huang
 """
 
 import numpy as np
-import math
-import ast
-import copy
 import random
 import time
 import multiprocessing
-import stopit
 
 from z3 import *
 
-import mnist as mm
-
-from scipy import ndimage
-
-from configuration import *
+from configuration.configuration import *
 
 
 ############################################################

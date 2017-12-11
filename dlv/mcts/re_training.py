@@ -1,17 +1,11 @@
 #!/usr/bin/env python
 
 
-import sys
-from PIL import Image
 import numpy as np
-import imp
-from basics import *
-from networkBasics import *
-from configuration import * 
-from scipy.optimize import least_squares
-import matplotlib.pyplot as plt
+from basics.basics import *
+from networks.networkBasics import *
+from configuration.configuration import *
 import scipy.io as sio
-import matplotlib as mpl
 
 
 class re_training:
@@ -136,8 +130,7 @@ class re_training:
         scoreReport = '%s %s'%(score,model.metrics_names)
         return scoreReport
         
-    def saveToMat(self,path): 
-        import scipy.io as sio
+    def saveToMat(self,path):
         data = []
         label = []
         for n in range(len(self.xtrain)): 

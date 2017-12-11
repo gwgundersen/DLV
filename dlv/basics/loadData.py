@@ -6,37 +6,26 @@ The main file for load models
 author: Xiaowei Huang
 """
 
-import sys
-sys.path.append('networks')
-sys.path.append('safety_check')
-sys.path.append('adversary_generation')
-
 import time
-import numpy as np
 import scipy.io as sio
-import matplotlib.pyplot as plt
 from pylab import *
 
 # keras
-from keras.models import Model, Sequential, model_from_json
-from keras.layers import Input, Dense
 import keras.optimizers
 
 
 # visualisation
-#from keras.utils.visualize_util import plot
-#
 from keras.datasets import mnist
 from keras.utils import np_utils
 
 # for training cifar10
 from keras.preprocessing.image import ImageDataGenerator
 
-from keras.callbacks import TensorBoard, LearningRateScheduler, ModelCheckpoint
+from keras.callbacks import LearningRateScheduler, ModelCheckpoint
 
 
 
-from configuration import *
+from configuration.configuration import *
 
 
 # training the model from data

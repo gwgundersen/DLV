@@ -14,9 +14,18 @@ from keras import backend as K
 from scipy.stats import truncnorm, norm
 
 from basics import *
-from networkBasics import *
-from configuration import * 
+from networks.networkBasics import *
+from configuration.configuration import *
 import collections
+
+import matplotlib.pyplot as plt
+import scipy
+from scipy.stats import multivariate_normal
+import scipy.stats
+import numpy.linalg
+import operator
+import random
+import cv2
 
 ############################################################
 #
@@ -133,9 +142,7 @@ def SIFT_Filtered_twoPlayer(image): #threshold=0.0):
     else: 
         return  kp
     
-def getPoints_twoPlayer(image, kps): 
-    import operator
-    import random
+def getPoints_twoPlayer(image, kps):
     points = {}
     if dataset != "imageNet": 
         for x in range(max(image.shape)): 
@@ -310,12 +317,6 @@ def getPixelLoc(ind, image):
     return (ind/len(image), ind%len(image))
 
 def getDistribution(image, kp):
-
-    import matplotlib.pyplot as plt
-    import scipy
-    from scipy.stats import multivariate_normal
-    import scipy.stats
-    import numpy.linalg
     
     dist = np.zeros(image.shape[:2])
     i = 1
@@ -412,7 +413,6 @@ def CreateGaussianMixtureModel(image, kp, dimension=0):
 
 
 def GMM(image):
-    import cv2
     sift = cv2.xfeatures2d.SIFT_create() # cv2.SURF(400) #    cv2.xfeatures2d.SIFT_create()
     image1 = copy.deepcopy(image)
     if np.max(image1) <= 1: 

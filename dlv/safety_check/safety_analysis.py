@@ -5,26 +5,20 @@ author: Xiaowei Huang
 """
 
 import numpy as np
-import time
 import copy
 import math
-import random
 from operator import mul
 
 import matplotlib.pyplot as plt
-from scipy import ndimage
 
 from conv_safety_solve import conv_safety_solve
 from dense_safety_solve import dense_safety_solve
 from flatten_safety_solve import flatten_safety_solve
 from maxpooling_safety_solve import maxpooling_safety_solve
 
-import relu
-
-from basics import *
-from networkBasics import *
-from configuration import * 
-
+from basics.basics import *
+from networks.networkBasics import *
+from configuration.configuration import *
 
 
 def safety_analysis(model,dataset,layer2Consider,imageIndex,st,index,cl2,gl2,cp):

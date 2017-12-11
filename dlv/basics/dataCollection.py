@@ -4,12 +4,8 @@
 author: Xiaowei Huang
 """
 
-import numpy as np
-import time
-import os
-import copy
 
-from configuration import directory_statistics_string
+from configuration.configuration import directory_statistics_string
 
 class dataCollection:
 

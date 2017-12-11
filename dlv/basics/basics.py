@@ -7,6 +7,13 @@ import time
 import os
 import copy
 from keras import backend as K
+import scipy
+import matplotlib.pyplot as plt
+import scipy
+from scipy.stats import multivariate_normal
+import scipy.stats
+import numpy.linalg
+
 
 def assure_path_exists(path):
         dir = os.path.dirname(path)
@@ -102,8 +109,6 @@ def mergeTwoDicts(x,y):
 ################################################################
 
 def withKL(dist,const,image1,image2):
-
-    import scipy
     dist1, dist2 = GMM(image1), GMM(image2)
     return dist + const * scipy.stats.entropy(dist1.flatten(),dist2.flatten())
 
@@ -111,13 +116,6 @@ def withKL(dist,const,image1,image2):
  
 
 def getDistribution(image, kp):
-
-    import matplotlib.pyplot as plt
-    import scipy
-    from scipy.stats import multivariate_normal
-    import scipy.stats
-    import numpy.linalg
-    
     dist = np.zeros(image.shape[:2])
     i = 1
     for  k in kp: 

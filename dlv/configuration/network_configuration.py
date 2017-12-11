@@ -7,18 +7,17 @@ author: Xiaowei Huang
 import numpy as np
 import os
 
-import mnist_network as NN_mnist
-import cifar10_network as NN_cifar10
-import imageNet_network as NN_imageNet
-import twoDcurve_network as NN_twoDcurve
-import gtsrb_network as NN_gtsrb
+import networks.mnist_network as NN_mnist
+import networks.cifar10_network as NN_cifar10
+import networks.imageNet_network as NN_imageNet
+import networks.twoDcurve_network as NN_twoDcurve
+import networks.gtsrb_network as NN_gtsrb
 
-
-import mnist
-import cifar10
-import imageNet
-import twoDcurve
-import gtsrb
+from networks import mnist
+from networks import cifar10
+from networks import imageNet
+from networks import twoDcurve
+from networks import gtsrb
 
 def network_parameters(dataset): 
 

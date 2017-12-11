@@ -1,9 +1,8 @@
-import os, struct
-from array import array as pyarray
-from cvxopt.base import matrix
-import numpy as np
+import cv2
+import copy
+from matplotlib import pyplot
+import matplotlib as mpl
 
-import PIL.Image
 
 # FIXME: need actual class names
 def LABELS(index): 
@@ -25,9 +24,6 @@ def labels():
 def save(layer,image,filename):
     """
     """
-    import cv2
-    import copy
-    
     image_cv = copy.deepcopy(image)
 
 
@@ -66,8 +62,6 @@ def save(layer,image,filename):
 def show(image):
     """
     """
-    from matplotlib import pyplot
-    import matplotlib as mpl
     fig = pyplot.figure()
     ax = fig.add_subplot(1,1,1)
     #image = image.reshape(3,32,32).transpose(1,2,0)

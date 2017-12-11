@@ -6,14 +6,10 @@ A data structure for organising search
 author: Xiaowei Huang
 """
 
-import numpy as np
-import time
-import os
 import copy
 
-from configuration import *
-from regionSynth import initialiseRegion
-from basics import otherPixels
+from configuration.configuration import *
+from safety_check.regionSynth import initialiseRegion
 
 class searchTree:
 

@@ -1,20 +1,10 @@
 #!/usr/bin/env python
 
 import numpy as np
-import math
-import ast
-import copy
 import random
 import time
-import stopit
 
 from z3 import *
-
-#import display
-import mnist as mm
-
-from scipy import ndimage
-
 
 
 def bp(input,activations):  

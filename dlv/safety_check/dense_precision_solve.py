@@ -4,22 +4,6 @@
 author: Xiaowei Huang
 """
 
-import numpy as np
-import math
-import ast
-import copy
-import random
-import time
-import multiprocessing
-import stopit
-
-from z3 import *
-
-#import display
-import mnist as mm
-
-from scipy import ndimage
-
 
 def dense_precision_solve(nfeatures,nfilters,filters,bias,activations0,activations1,span,numSpan,nextSpan,nextNumSpan,pk):  
 

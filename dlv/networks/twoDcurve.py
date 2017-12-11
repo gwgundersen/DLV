@@ -3,24 +3,9 @@
 """
 For Xiaowei to train MLP for regression
 """
-import sys
-import time
 import numpy as np
-import scipy.io as sio
 import matplotlib.pyplot as plt
 
-# keras
-from keras.models import Model, Sequential
-from keras.layers import Input, Dense
-import keras.optimizers
-
-# visualisation
-#from keras.utils.visualize_util import plot
-
-#
-#import analyze  as analyzeNN
-#import display
-import basics 
 from math import sqrt
 
 

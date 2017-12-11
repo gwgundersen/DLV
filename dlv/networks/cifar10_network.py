@@ -13,7 +13,7 @@ from keras.layers import Convolution2D, MaxPooling2D
 from keras import backend as K
 from keras.utils import np_utils
 
-
+import cv2
 
 # for cifar10
 from keras.datasets import cifar10
@@ -375,9 +375,6 @@ def getLabel(model,n_in_tests):
     return np.squeeze(image)
     
 def readImage(path):
-
-    import cv2
-    
     im = cv2.resize(cv2.imread(path), (img_rows, img_cols)).astype('float32')
     im = im / 255
     im = im.transpose(2, 0, 1)

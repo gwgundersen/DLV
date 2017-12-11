@@ -5,24 +5,13 @@ compupute e_k according to e_{k-1} and p_{k-1}
 author: Xiaowei Huang
 """
 
-import numpy as np
-import copy
-from scipy import ndimage
-
-import mnist
-import cifar10
-import imageNet
-import mnist_network as NN_mnist
-import cifar10_network as NN_cifar10
-import imageNet_network as NN_imageNet
-
 from conv_region_solve import conv_region_solve
 from dense_region_solve import dense_region_solve
 from regionByActivation import *
 
-from basics import *
-from networkBasics import *
-from configuration import * 
+from basics.basics import *
+from networks.networkBasics import *
+from configuration.configuration import *
 
     
 def regionSynth(model,dataset,image,manipulated,layer2Consider,span,numSpan,numDimsToMani):

@@ -6,20 +6,14 @@ A data structure for organising search
 author: Xiaowei Huang
 """
 
-import numpy as np
-import time
-import os
-import copy
-import sys
 import operator
 import random
-import math
 
-from configuration import *
-from regionSynth import initialiseRegion, initialiseRegions
+from configuration.configuration import *
+from safety_check.regionSynth import initialiseRegions
 
-from inputManipulation import applyManipulation
-from basics import *
+from basics.inputManipulation import applyManipulation
+from basics.basics import *
 
 # tunable parameter for MCTS
 cp = 0.5
