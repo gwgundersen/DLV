@@ -16,9 +16,9 @@ from dense_safety_solve import dense_safety_solve
 from flatten_safety_solve import flatten_safety_solve
 from maxpooling_safety_solve import maxpooling_safety_solve
 
-from basics.basics import *
-from networks.networkBasics import *
-from configuration.configuration import *
+from dlv.basics.basics import *
+from dlv.networks.networkBasics import *
+from dlv.configuration.configuration import *
 
 
 def safety_analysis(model,dataset,layer2Consider,imageIndex,st,index,cl2,gl2,cp):

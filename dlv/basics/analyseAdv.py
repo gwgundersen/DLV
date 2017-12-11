@@ -3,10 +3,11 @@ from __future__ import print_function
 import numpy as np
 import imp
 from scipy.optimize import least_squares
-from basics import l1Distance
 from sklearn.cluster import KMeans
 import copy
-from basics import diffImage
+
+from dlv.basics.basics import l1Distance
+from dlv.basics.basics import diffImage
 
 class analyseAdv:
 

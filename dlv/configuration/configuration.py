@@ -5,8 +5,8 @@ Define paramters
 author: Xiaowei Huang
 """
 
-from network_configuration import *
-from usual_configuration import * 
+from dlv.configuration.network_configuration import *
+from dlv.configuration.usual_configuration import *
 
 
 #######################################################

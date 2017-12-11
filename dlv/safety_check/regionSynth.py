@@ -9,9 +9,9 @@ from conv_region_solve import conv_region_solve
 from dense_region_solve import dense_region_solve
 from regionByActivation import *
 
-from basics.basics import *
-from networks.networkBasics import *
-from configuration.configuration import *
+from dlv.basics.basics import *
+from dlv.networks.networkBasics import *
+from dlv.configuration.configuration import *
 
     
 def regionSynth(model,dataset,image,manipulated,layer2Consider,span,numSpan,numDimsToMani):

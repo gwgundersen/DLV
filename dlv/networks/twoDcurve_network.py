@@ -13,7 +13,7 @@ from keras.layers import Input, Dense
 from keras.models import model_from_json
 from keras import backend as K
 
-from basics import basics
+from dlv.basics import basics
 
 from twoDcurve import target_fun
 

@@ -2,9 +2,9 @@
 
 
 import numpy as np
-from basics.basics import *
-from networks.networkBasics import *
-from configuration.configuration import *
+from dlv.basics.basics import *
+from dlv.networks.networkBasics import *
+from dlv.configuration.configuration import *
 import scipy.io as sio
 
 

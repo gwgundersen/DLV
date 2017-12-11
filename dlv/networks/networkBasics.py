@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 
-from configuration.configuration import *
+from dlv.configuration.configuration import *
 
 
 def getLayerType(model,layer2Consider):

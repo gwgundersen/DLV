@@ -9,8 +9,8 @@ import numpy as np
 import copy
 from random import randint, random
 
-from configuration.configuration import *
-from networks.networkBasics import *
+from dlv.configuration.configuration import *
+from dlv.networks.networkBasics import *
 
     
 ############################################################

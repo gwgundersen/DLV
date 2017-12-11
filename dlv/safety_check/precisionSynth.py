@@ -13,9 +13,9 @@ import math
 from conv_precision_solve import conv_precision_solve
 from dense_precision_solve import dense_precision_solve
 
-from networks.networkBasics import *
-from configuration.configuration import *
-from basics.basics import *
+from dlv.networks.networkBasics import *
+from dlv.configuration.configuration import *
+from dlv.basics.basics import *
 
 """
 The following is an overapproximation

@@ -11,8 +11,8 @@ import multiprocessing
 from z3 import *
 
 
-from basics.basics import *
-from configuration.configuration import *
+from dlv.basics.basics import *
+from dlv.configuration.configuration import *
 
 
 def dense_safety_solve(nfeatures,nfilters,filters,bias,input,activations,pcl,pgl,span,numSpan,pk):  

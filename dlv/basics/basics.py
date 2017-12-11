@@ -10,7 +10,6 @@ from keras import backend as K
 import scipy
 import matplotlib.pyplot as plt
 import scipy
-from scipy.stats import multivariate_normal
 import scipy.stats
 import numpy.linalg
 

@@ -11,8 +11,8 @@ import multiprocessing
 
 from z3 import *
 
-from configuration.configuration import *
-from basics.basics import *
+from dlv.configuration.configuration import *
+from dlv.basics.basics import *
 
 inverseFunction = "point"
 

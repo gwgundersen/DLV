@@ -12,20 +12,13 @@ from pylab import *
 
 # keras
 import keras.optimizers
-
-
 # visualisation
-from keras.datasets import mnist
 from keras.utils import np_utils
-
 # for training cifar10
 from keras.preprocessing.image import ImageDataGenerator
-
 from keras.callbacks import LearningRateScheduler, ModelCheckpoint
 
-
-
-from configuration.configuration import *
+from dlv.configuration.configuration import *
 
 
 # training the model from data

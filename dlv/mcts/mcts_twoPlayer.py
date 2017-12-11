@@ -10,16 +10,14 @@ import numpy as np
 import copy
 import random
 import math
-
-from configuration.configuration import *
-
-from basics.inputManipulation import applyManipulation
-from basics.basics import *
-
-from basics.initialiseSiftKeypoints import initialiseSiftKeypointsTwoPlayer
-
-from re_training import re_training
 import operator
+
+from dlv.configuration.configuration import *
+
+from dlv.basics.inputManipulation import applyManipulation
+from dlv.basics.basics import *
+from dlv.basics.initialiseSiftKeypoints import initialiseSiftKeypointsTwoPlayer
+from dlv.mcts.re_training import re_training
 
 
 effectiveConfidenceWhenChanging = 0 

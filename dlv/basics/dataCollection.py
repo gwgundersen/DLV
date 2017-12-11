@@ -5,7 +5,7 @@ author: Xiaowei Huang
 """
 
 
-from configuration.configuration import directory_statistics_string
+from dlv.configuration.configuration import directory_statistics_string
 
 class dataCollection:
 

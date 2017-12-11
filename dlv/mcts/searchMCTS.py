@@ -9,11 +9,11 @@ author: Xiaowei Huang
 import operator
 import random
 
-from configuration.configuration import *
-from safety_check.regionSynth import initialiseRegions
+from dlv.configuration.configuration import *
+from dlv.safety_check.regionSynth import initialiseRegions
 
-from basics.inputManipulation import applyManipulation
-from basics.basics import *
+from dlv.basics.inputManipulation import applyManipulation
+from dlv.basics.basics import *
 
 # tunable parameter for MCTS
 cp = 0.5

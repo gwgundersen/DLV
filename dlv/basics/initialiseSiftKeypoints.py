@@ -13,9 +13,9 @@ import numpy as np
 from keras import backend as K
 from scipy.stats import truncnorm, norm
 
-from basics import *
-from networks.networkBasics import *
-from configuration.configuration import *
+from dlv.basics.basics import *
+from dlv.networks.networkBasics import *
+from dlv.configuration.configuration import *
 import collections
 
 import matplotlib.pyplot as plt
