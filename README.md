@@ -4,7 +4,7 @@ NB: This software is currently under active development. Please feel free to con
 
 ## Getting Started
 
-Please refer to the original papers for more details about the software:
+Please refer to the original papers for details about the software:
 
 - [Feature-Guided Black-Box Safety Testing of Deep Neural Networks](docs/DLV_MCTS_TwoPlayer.pdf)
 - [Safety Verification of Deep Neural Networks](docs/DLV_TheoryPaper.pdf)
@@ -66,8 +66,9 @@ If you want to train a network for GTSRB, Please download the dataset file X.h5 
 
 Use the following command to call the program: 
 
-```bash
-python DLV.py
+```python
+>>> import dlv
+>>> dlv.solve()
 ```
 
 Please use the file `configuration.py` to set the parameters for the system to run.
