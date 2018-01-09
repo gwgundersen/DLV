@@ -13,9 +13,9 @@ import math
 from conv_precision_solve import conv_precision_solve
 from dense_precision_solve import dense_precision_solve
 
-from dlv.networks.networkBasics import *
-from dlv.configuration.configuration import *
-from dlv.basics.basics import *
+from dlv.networks import networkBasics
+from dlv.configuration import configuration as cfg
+from dlv.basics import basics
 
 """
 The following is an overapproximation
@@ -25,17 +25,17 @@ The following is an overapproximation
 
 def precisionSynth(model,image,layer2Consider,span,numSpan,nextSpan,nextNumSpan):
 
-    if enumerationMethod == "line":
+    if cfg.enumerationMethod == "line":
         return precSynthFull(model,image,layer2Consider,span,numSpan,nextSpan,nextNumSpan)
-    elif enumerationMethod == "convex":  
+    elif cfg.enumerationMethod == "convex":
         return precSynthSimp(model,image,layer2Consider,span,numSpan,nextSpan,nextNumSpan)
 
 def precSynthSimp(model,image,layer2Consider,span,numSpan,nextSpan,nextNumSpan):
 
-    if layer2Consider in errorBounds.keys(): 
-        pk = errorBounds[layer2Consider]
+    if layer2Consider in cfg.errorBounds.keys():
+        pk = cfg.errorBounds[layer2Consider]
     else: 
-        pk = errorBounds[-1]
+        pk = cfg.errorBounds[-1]
     
     for k in nextSpan.keys(): 
         length = nextSpan[k] * nextNumSpan[k]
@@ -50,40 +50,40 @@ def precSynthFull(model,image,layer2Consider,span,numSpan,nextSpan,nextNumSpan):
 
     pk = min(span.values())
 
-    config = NN.getConfig(model)
+    config = cfg.NN.getConfig(model)
 
     # get weights and bias of the entire trained neural network
-    (wv,bv) = NN.getWeightVector(model,layer2Consider)
+    (wv,bv) = cfg.NN.getWeightVector(model,layer2Consider)
     
     # get the activations of the previous and the current layer
     if layer2Consider == 0: 
         activations0 = image
-    else: activations0 = NN.getActivationValue(model,layer2Consider-1,image)
-    activations1 = NN.getActivationValue(model,layer2Consider,image)
+    else: activations0 = cfg.NN.getActivationValue(model,layer2Consider-1,image)
+    activations1 = cfg.NN.getActivationValue(model,layer2Consider,image)
 
     # get the type of the current layer
-    layerType = getLayerType(model,layer2Consider)
+    layerType = networkBasics.getLayerType(model,layer2Consider)
     #[ lt for (l,lt) in config if layer2Consider == l ]
     #if len(layerType) > 0: layerType = layerType[0]
     #else: print "cannot find the layerType"
 
-    wv2Consider, bv2Consider = getWeight(wv,bv,layer2Consider)
+    wv2Consider, bv2Consider = basics.getWeight(wv,bv,layer2Consider)
 
     if layerType == "Convolution2D" or layerType == "Conv2D":  
         print "convolutional layer, synthesising precision ..."
         # filters can be seen as the output of a convolutional layer
-        nfilters = numberOfFilters(wv2Consider)
+        nfilters = basics.numberOfFilters(wv2Consider)
         # features can be seen as the inputs for a convolutional layer
-        nfeatures = numberOfFeatures(wv2Consider)
-        npk = conv_solve_prep(model,dataBasics,nfeatures,nfilters,wv2Consider,bv2Consider,activations0,activations1,span,numSpan,nextSpan,nextNumSpan,pk)
+        nfeatures = basics.numberOfFeatures(wv2Consider)
+        npk = conv_solve_prep(model,cfg.dataBasics,nfeatures,nfilters,wv2Consider,bv2Consider,activations0,activations1,span,numSpan,nextSpan,nextNumSpan,pk)
         
     elif layerType == "Dense":  
         print "dense layer, synthesising precision ..."
         # filters can be seen as the output of a convolutional layer
-        nfilters = numberOfFilters(wv2Consider)
+        nfilters = basics.numberOfFilters(wv2Consider)
         # features can be seen as the inputs for a convolutional layer
-        nfeatures = numberOfFeatures(wv2Consider)
-        npk = dense_solve_prep(model,dataBasics,nfeatures,nfilters,wv2Consider,bv2Consider,activations0,activations1,span,numSpan,nextSpan,nextNumSpan,pk)
+        nfeatures = basics.numberOfFeatures(wv2Consider)
+        npk = dense_solve_prep(model,cfg.dataBasics,nfeatures,nfilters,wv2Consider,bv2Consider,activations0,activations1,span,numSpan,nextSpan,nextNumSpan,pk)
         
     elif layerType == "InputLayer":  
         print "inputLayer layer, synthesising precision ..."

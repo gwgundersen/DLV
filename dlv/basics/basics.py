@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-
-
 import numpy as np
 import math
 import time
@@ -18,25 +15,6 @@ def assure_path_exists(path):
         dir = os.path.dirname(path)
         if not os.path.exists(dir):
             os.makedirs(dir)
-
-# to check whether a specific point is 
-# inconsistent for network and curve
-def checkCex(model,x):
-    y_predicted = model.predict(np.array([x]))
-    y_p = [chooseResult(y) for y in y_predicted]
-    y_actual = mapping(x)
-
-    if (y_p[0] == 1) and (y_actual[0] == False): 
-        result = True
-    elif (y_p[0] == 2) and (y_actual[0] == True): 
-        result = True
-    else: 
-        result = False
-    if result == True: 
-        print "the point " + str(x) + " is a counterexample!"
-    else: 
-        print "error: the point " + str(x) + " is NOT a counterexample! please check ... "
-    return result
     
 def current_milli_time():
     return int(round(time.time() * 1000) % 4294967296)
@@ -106,13 +84,6 @@ def mergeTwoDicts(x,y):
 #  SIFT auxiliary functions
 #
 ################################################################
-
-def withKL(dist,const,image1,image2):
-    dist1, dist2 = GMM(image1), GMM(image2)
-    return dist + const * scipy.stats.entropy(dist1.flatten(),dist2.flatten())
-
-    
- 
 
 def getDistribution(image, kp):
     dist = np.zeros(image.shape[:2])

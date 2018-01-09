@@ -5,7 +5,8 @@ author: Xiaowei Huang
 """
 
 
-from dlv.configuration.configuration import directory_statistics_string
+from dlv.configuration import configuration as cfg
+
 
 class dataCollection:
 
@@ -20,7 +21,7 @@ class dataCollection:
         self.l1Distance = {}
         self.l0Distance = {}
         self.confidence = {}
-        self.fileName = "%s/dataCollection.txt"%(directory_statistics_string)
+        self.fileName = "%s/dataCollection.txt"%(cfg.directory_statistics_string)
         self.fileHandler = open(self.fileName, 'w')
         self.succPercent = 0
         

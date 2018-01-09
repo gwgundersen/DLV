@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 
 
-from dlv.basics.basics import *
-from dlv.networks.networkBasics import *
-from dlv.configuration.configuration import *
 import graphviz as gv
 
 

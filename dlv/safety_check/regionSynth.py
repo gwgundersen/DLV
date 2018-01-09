@@ -5,32 +5,34 @@ compupute e_k according to e_{k-1} and p_{k-1}
 author: Xiaowei Huang
 """
 
+import numpy as np
+import copy
 from conv_region_solve import conv_region_solve
 from dense_region_solve import dense_region_solve
-from regionByActivation import *
+import regionByActivation
 
-from dlv.basics.basics import *
-from dlv.networks.networkBasics import *
-from dlv.configuration.configuration import *
+from dlv.basics import basics
+from dlv.networks import networkBasics
+from dlv.configuration import configuration as cfg
 
     
 def regionSynth(model,dataset,image,manipulated,layer2Consider,span,numSpan,numDimsToMani):
 
-    config = NN.getConfig(model)
+    config = cfg.NN.getConfig(model)
 
     # get weights and bias of the entire trained neural network
-    (wv,bv) = NN.getWeightVector(model,layer2Consider)
+    (wv,bv) = cfg.NN.getWeightVector(model,layer2Consider)
     
     # get the type of the current layer
-    layerType = getLayerType(model,layer2Consider)
+    layerType = networkBasics.getLayerType(model,layer2Consider)
 
-    wv2Consider, bv2Consider = getWeight(wv,bv,layer2Consider)
+    wv2Consider, bv2Consider = basics.getWeight(wv,bv,layer2Consider)
     
     # get the activations of the previous and the current layer
     if layer2Consider == 0: 
         activations0 = image
-    else: activations0 = NN.getActivationValue(model,layer2Consider-1,image)
-    activations1 = NN.getActivationValue(model,layer2Consider,image)
+    else: activations0 = cfg.NN.getActivationValue(model,layer2Consider-1,image)
+    activations1 = cfg.NN.getActivationValue(model,layer2Consider,image)
 
     if layerType == "Convolution2D" or layerType == "Conv2D":  
         print "convolutional layer, synthesising region ..."
@@ -39,19 +41,19 @@ def regionSynth(model,dataset,image,manipulated,layer2Consider,span,numSpan,numD
         elif len(activations1.shape) ==2: 
             inds = getTop2D(model,image,activations1,manipulated,span.keys(),numDimsToMani,layer2Consider)
         # filters can be seen as the output of a convolutional layer
-        nfilters = numberOfFilters(wv2Consider)
+        nfilters = basics.numberOfFilters(wv2Consider)
         # features can be seen as the inputs for a convolutional layer
-        nfeatures = numberOfFeatures(wv2Consider)
-        (nextSpan,nextNumSpan) = conv_region_prep(model,dataBasics,nfeatures,nfilters,wv2Consider,bv2Consider,activations0,activations1,span,numSpan,inds,numDimsToMani)
+        nfeatures = basics.numberOfFeatures(wv2Consider)
+        (nextSpan,nextNumSpan) = conv_region_prep(model,cfg.dataBasics,nfeatures,nfilters,wv2Consider,bv2Consider,activations0,activations1,span,numSpan,inds,numDimsToMani)
     
     elif layerType == "Dense":
         print "dense layer, synthesising region ..."
         inds = getTop(model,image,activations1,manipulated,numDimsToMani,layer2Consider)
         # filters can be seen as the output of a convolutional layer
-        nfilters = numberOfFilters(wv2Consider)
+        nfilters = basics.numberOfFilters(wv2Consider)
         # features can be seen as the inputs for a convolutional layer
-        nfeatures = numberOfFeatures(wv2Consider)
-        (nextSpan,nextNumSpan) = dense_solve_prep(model,dataBasics,nfeatures,nfilters,wv2Consider,bv2Consider,activations0,activations1,span,numSpan,inds)
+        nfeatures = basics.numberOfFeatures(wv2Consider)
+        (nextSpan,nextNumSpan) = dense_solve_prep(model,cfg.dataBasics,nfeatures,nfilters,wv2Consider,bv2Consider,activations0,activations1,span,numSpan,inds)
         
     elif layerType == "InputLayer":
         print "inputLayer layer, synthesising region ..."
@@ -152,7 +154,7 @@ def dense_solve_prep(model,dataBasics,nfeatures,nfilters,wv,bv,activations0,acti
 
 def initialiseRegions(model,image,manipulated):
     allRegions = []
-    num = image.size/featureDims
+    num = image.size/cfg.featureDims
     newManipulated1 = []
     newManipulated2 = manipulated
     while num > 0 : 
@@ -165,14 +167,14 @@ def initialiseRegions(model,image,manipulated):
     return allRegions
 
 def initialiseRegion(model,image,manipulated): 
-    return initialiseRegionActivation(model,manipulated,image)
+    return regionByActivation.initialiseRegionActivation(model,manipulated,image)
         
 def getTop(model,image,activation,manipulated,numDimsToMani,layerToConsider): 
-    return getTopActivation(activation,manipulated,layerToConsider,numDimsToMani)
+    return regionByActivation.getTopActivation(activation,manipulated,layerToConsider,numDimsToMani)
 
 def getTop2D(model,image,activation,manipulated,ps,numDimsToMani,layerToConsider): 
-    return getTop2DActivation(activation,manipulated,ps,numDimsToMani,layerToConsider)
+    return regionByActivation.getTop2DActivation(activation,manipulated,ps,numDimsToMani,layerToConsider)
 
-def getTop3D(model,image,activation,manipulated,ps,numDimsToMani,layerToConsider): 
-    return getTop3DActivation(activation,manipulated,ps,numDimsToMani,layerToConsider)
+def getTop3D(model,image,activation,manipulated,ps,numDimsToMani,layerToConsider):
+    return regionByActivation.getTop3DActivation(activation,manipulated,ps,numDimsToMani,layerToConsider)
 

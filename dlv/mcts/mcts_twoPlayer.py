@@ -12,10 +12,10 @@ import random
 import math
 import operator
 
-from dlv.configuration.configuration import *
+from dlv.configuration import configuration as cfg
 
 from dlv.basics.inputManipulation import applyManipulation
-from dlv.basics.basics import *
+from dlv.basics import basics
 from dlv.basics.initialiseSiftKeypoints import initialiseSiftKeypointsTwoPlayer
 from dlv.mcts.re_training import re_training
 
@@ -96,9 +96,9 @@ class mcts_twoPlayer:
     def predictWithActivations(self,activations):
         if self.layer > -1: 
             output = np.squeeze(self.autoencoder.predict(np.expand_dims(activations,axis=0)))
-            return NN.predictWithImage(self.model,output)
+            return cfg.NN.predictWithImage(self.model,output)
         else: 
-            return NN.predictWithImage(self.model,activations)
+            return cfg.NN.predictWithImage(self.model,activations)
             
     def visualizationMCTS(self):
         for k in range(len(self.activations)): 
@@ -107,8 +107,8 @@ class mcts_twoPlayer:
             emptyNode = np.zeros_like(self.activations[0])
             activations1[k] = emptyNode
             output = np.squeeze(self.autoencoder.predict(np.expand_dims(activations1,axis=0)))
-            path0="%s/%s_autoencoder_%s.png"%(directory_pic_string,startIndexOfImage,k)
-            dataBasics.save(-1,output, path0)
+            path0="%s/%s_autoencoder_%s.png"%(cfg.directory_pic_string,cfg.startIndexOfImage,k)
+            cfg.dataBasics.save(-1,output, path0)
             
     def setManipulationType(self,typeStr): 
         self.manipulationType = typeStr 
@@ -133,14 +133,14 @@ class mcts_twoPlayer:
             for j in range(len(actions[i])):
                 ast[j] = actions[i][j]
             self.actions[i] = ast
-        nprint("%s actions have been initialised. "%(len(self.actions)))
+        basics.nprint("%s actions have been initialised. "%(len(self.actions)))
         # initialise decision tree
         #self.decisionTree = decisionTree(self.model, self.actions, self.activations, "decision")
         
     def initialiseLeafNode(self,index,parentIndex,newSpans,newNumSpans):
-        nprint("initialising a leaf node %s from the node %s"%(index,parentIndex))
-        self.spans[index] = mergeTwoDicts(self.spans[parentIndex],newSpans)
-        self.numSpans[index] = mergeTwoDicts(self.numSpans[parentIndex],newNumSpans)
+        basics.nprint("initialising a leaf node %s from the node %s"%(index,parentIndex))
+        self.spans[index] = basics.mergeTwoDicts(self.spans[parentIndex],newSpans)
+        self.numSpans[index] = basics.mergeTwoDicts(self.numSpans[parentIndex],newNumSpans)
         self.cost[index] = 0
         self.parent[index] = parentIndex 
         self.children[index] = []
@@ -191,12 +191,12 @@ class mcts_twoPlayer:
         allValues = {}
         for childIndex in self.children[index]: 
             allValues[childIndex] = self.cost[childIndex] / float(self.numberOfVisited[childIndex])
-        nprint("finding best children from %s"%(allValues))
+        basics.nprint("finding best children from %s"%(allValues))
         return max(allValues.iteritems(), key=operator.itemgetter(1))[0]
         
     def treeTraversal(self,index):
         if self.fullyExpanded[index] == True: 
-            nprint("tree traversal on node %s"%(index))
+            basics.nprint("tree traversal on node %s"%(index))
             allValues = {}
             for childIndex in self.children[index]: 
                 allValues[childIndex] = (self.cost[childIndex] / float(self.numberOfVisited[childIndex])) + explorationRate * math.sqrt(math.log(self.numberOfVisited[index]) / float(self.numberOfVisited[childIndex]))
@@ -215,7 +215,7 @@ class mcts_twoPlayer:
                 self.usedActionsID[self.keypoint[index]] = [self.indexToActionID[index]]
             return self.treeTraversal(nextIndex)
         else: 
-            nprint("tree traversal terminated on node %s"%(index))
+            basics.nprint("tree traversal terminated on node %s"%(index))
             availableActions = copy.deepcopy(self.actions)
             for k in self.usedActionsID.keys(): 
                 for i in self.usedActionsID[k]: 
@@ -223,7 +223,7 @@ class mcts_twoPlayer:
             return (index,availableActions)
         
     def initialiseExplorationNode(self,index,availableActions):
-        nprint("expanding %s"%(index))
+        basics.nprint("expanding %s"%(index))
         if self.keypoint[index] != 0: 
             for (actionId, (span,numSpan,_)) in availableActions[self.keypoint[index]].iteritems() : #initialisePixelSets(self.model,self.image,list(set(self.spans[index].keys() + self.usefulPixels))): 
                 self.indexToNow += 1
@@ -246,10 +246,10 @@ class mcts_twoPlayer:
         self.cost[index] += value
         self.numberOfVisited[index] += 1
         if self.parent[index] in self.parent : 
-            nprint("start backPropagating the value %s from node %s, whose parent node is %s"%(value,index,self.parent[index]))
+            basics.nprint("start backPropagating the value %s from node %s, whose parent node is %s"%(value,index,self.parent[index]))
             self.backPropagation(self.parent[index],value)
         else: 
-            nprint("backPropagating ends on node %s"%(index))
+            basics.nprint("backPropagating ends on node %s"%(index))
         
             
     def analysePixels(self):
@@ -300,13 +300,13 @@ class mcts_twoPlayer:
             
     # start random sampling and return the Euclidean value as the value
     def sampling(self,index,availableActions):
-        nprint("start sampling node %s"%(index))
+        basics.nprint("start sampling node %s"%(index))
         availableActions2 = copy.deepcopy(availableActions)
         #print(availableActions,self.keypoint[index],self.indexToActionID[index])
         availableActions2[self.keypoint[index]].pop(self.indexToActionID[index], None)
         sampleValues = []
         i = 0
-        for i in range(MCTS_multi_samples): 
+        for i in range(cfg.MCTS_multi_samples):
             self.spansPath = self.spans[index]
             self.numSpansPath = self.numSpans[index] 
             self.depth = 0
@@ -332,21 +332,21 @@ class mcts_twoPlayer:
         
         activations1 = applyManipulation(self.activations,self.spansPath,self.numSpansPath)
         (newClass,newConfident) = self.predictWithActivations(activations1)
-        (distMethod,distVal) = controlledSearch
+        (distMethod,distVal) = cfg.controlledSearch
         if distMethod == "euclidean": 
-            dist = euclideanDistance(activations1,self.activations) 
+            dist = basics.euclideanDistance(activations1,self.activations)
             termValue = 0.0
             termByDist = dist > distVal
         elif distMethod == "L1": 
-            dist = l1Distance(activations1,self.activations) 
+            dist = basics.l1Distance(activations1,self.activations)
             termValue = 0.0
             termByDist = dist > distVal
         elif distMethod == "Percentage": 
-            dist = diffPercent(activations1,self.activations)
+            dist = basics.diffPercent(activations1,self.activations)
             termValue = 0.0
             termByDist = dist > distVal
         elif distMethod == "NumDiffs": 
-            dist =  diffPercent(activations1,self.activations) * self.activations.size
+            dist = basics.diffPercent(activations1,self.activations) * self.activations.size
             termValue = 0.0
             termByDist = dist > distVal
 
@@ -358,7 +358,7 @@ class mcts_twoPlayer:
 
         if newClass != self.originalClass and newConfident > effectiveConfidenceWhenChanging:
             # and newClass == dataBasics.next_index(self.originalClass,self.originalClass): 
-            nprint("sampling a path ends in a terminal node with self.depth %s... "%self.depth)
+            basics.nprint("sampling a path ends in a terminal node with self.depth %s... "%self.depth)
             
             #print("L1 distance: %s"%(l1Distance(self.activations,activations1)))
             #print(self.activations.shape)
@@ -376,16 +376,16 @@ class mcts_twoPlayer:
             if self.bestCase[0] < dist: 
                 self.numConverge += 1
                 self.bestCase = (dist,self.spansPath,self.numSpansPath)
-                path0="%s/%s_currentBest_%s_as_%s_with_confidence_%s.png"%(directory_pic_string,startIndexOfImage,self.numConverge,dataBasics.LABELS(int(newClass)),newConfident)
-                dataBasics.save(-1,activations1,path0)
+                path0="%s/%s_currentBest_%s_as_%s_with_confidence_%s.png"%(cfg.directory_pic_string,cfg.startIndexOfImage,self.numConverge,cfg.dataBasics.LABELS(int(newClass)),newConfident)
+                cfg.dataBasics.save(-1,activations1,path0)
 
             return (self.depth == 0, dist)
         elif termByDist == True: 
-            nprint("sampling a path ends by controlled search with self.depth %s ... "%self.depth)
+            basics.nprint("sampling a path ends by controlled search with self.depth %s ... "%self.depth)
             self.re_training.addDatum(activations1,self.originalClass,newClass)
             return (self.depth == 0, termValue)
         elif list(set(self.availableActionIDs[k])-set(self.usedActionIDs[k])) == []: 
-            nprint("sampling a path ends with self.depth %s because no more actions can be taken ... "%self.depth)
+            basics.nprint("sampling a path ends with self.depth %s because no more actions can be taken ... "%self.depth)
             return (self.depth == 0, termValue)
         else: 
             #print("continue sampling node ... ")
@@ -447,16 +447,16 @@ class mcts_twoPlayer:
         
     def terminatedByControlledSearch(self,index): 
         activations1 = applyManipulation(self.activations,self.spans[index],self.numSpans[index])
-        (distMethod,distVal) = controlledSearch
+        (distMethod,distVal) = cfg.controlledSearch
         if distMethod == "euclidean": 
-            dist = euclideanDistance(activations1,self.activations) 
+            dist = basics.euclideanDistance(activations1,self.activations)
         elif distMethod == "L1": 
-            dist = l1Distance(activations1,self.activations) 
+            dist = basics.l1Distance(activations1,self.activations)
         elif distMethod == "Percentage": 
-            dist = diffPercent(activations1,self.activations)
+            dist = basics.diffPercent(activations1,self.activations)
         elif distMethod == "NumDiffs": 
-            dist = diffPercent(activations1,self.activations)
-        nprint("terminated by controlled search")
+            dist = basics.diffPercent(activations1,self.activations)
+        basics.nprint("terminated by controlled search")
         return dist > distVal 
         
     def applyManipulationToGetImage(self,spans,numSpans):
@@ -468,29 +468,29 @@ class mcts_twoPlayer:
         
     def euclideanDist(self,index): 
         activations1 = applyManipulation(self.activations,self.spans[index],self.numSpans[index])
-        return euclideanDistance(self.activations,activations1)
+        return basics.euclideanDistance(self.activations,activations1)
         
     def l1Dist(self,index): 
         activations1 = applyManipulation(self.activations,self.spans[index],self.numSpans[index])
-        return l1Distance(self.activations,activations1)
+        return basics.l1Distance(self.activations,activations1)
         
     def l0Dist(self,index): 
         activations1 = applyManipulation(self.activations,self.spans[index],self.numSpans[index])
-        return l0Distance(self.activations,activations1)
+        return basics.l0Distance(self.activations,activations1)
         
     def diffImage(self,index): 
         activations1 = applyManipulation(self.activations,self.spans[index],self.numSpans[index])
-        return diffImage(self.activations,activations1)
+        return basics.diffImage(self.activations,activations1)
         
     def diffPercent(self,index): 
         activations1 = applyManipulation(self.activations,self.spans[index],self.numSpans[index])
-        return diffPercent(self.activations,activations1)
+        return basics.diffPercent(self.activations,activations1)
 
     def mergeSpan(self,spansPath,span): 
-        return mergeTwoDicts(spansPath, span)
+        return basics.mergeTwoDicts(spansPath, span)
         
     def mergeNumSpan(self,numSpansPath,numSpan):
-        return mergeTwoDicts(numSpansPath, numSpan)
+        return basics.mergeTwoDicts(numSpansPath, numSpan)
         
     def showDecisionTree(self):
         self.decisionTree.show()

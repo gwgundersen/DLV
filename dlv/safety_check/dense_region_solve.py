@@ -4,14 +4,15 @@
 author: Xiaowei Huang
 """
 
+import math
 import numpy as np
 import random
 import time
 import multiprocessing
 
-from z3 import *
+import z3
 
-from dlv.configuration.configuration import *
+from dlv.configuration import configuration as cfg
 
 
 ############################################################
@@ -49,7 +50,7 @@ def condense(nfeatures,nfilters,filters,bias,activations0,activations1,span,numS
     # variables to be used for z3
     variable={}    
     
-    s = Solver()
+    s = z3.Solver()
     
     # initialise nextSpan and nextNumSpan for later refinement
     nextSpan = {}
@@ -88,7 +89,7 @@ def findMin(v,lst):
 
     bl = True
     for l in lst: 
-        if l%v > epsilon: bl = False
+        if l%v > cfg.epsilon: bl = False
     if bl == True: 
         return v
     else: 
@@ -211,7 +212,7 @@ def stretch(nfeatures,nfilters,filters,bias,activations0,activations1,span,numSp
     # variables to be used for z3
     variable={}    
     
-    s = Tactic('lra').solver()
+    s = z3.Tactic('lra').solver()
     
     # initialise nextSpan and nextNumSpan for later refinement
     nextSpan = {}
@@ -224,7 +225,7 @@ def stretch(nfeatures,nfilters,filters,bias,activations0,activations1,span,numSp
     for k in inds: 
         while (True): 
             s.reset()
-            variable[1,k+1] = Real('y_%s' % (k+1))
+            variable[1,k+1] = z3.Real('y_%s' % (k+1))
             str11 = "variable[1,"+ str (k+1) + "] <=  " + str(activations1[k] + nextSpan[k] * nextNumSpan[k])
             str12 = "variable[1,"+ str (k+1) + "] >=  " + str(activations1[k] - nextSpan[k] * nextNumSpan[k])
             str1 = "And(" + str11 + "," + str12 +")"
@@ -235,7 +236,7 @@ def stretch(nfeatures,nfilters,filters,bias,activations0,activations1,span,numSp
             postcond = "variable[1,"+ str (k+1) + "] ==  "
             for l in range(nfeatures):
                 if l in span.keys():
-                    variable[0,l+1] = Real('x_%s' % (l+1))
+                    variable[0,l+1] = z3.Real('x_%s' % (l+1))
                     str21 = "variable[0,"+ str (l+1) + "] <=  " + str(activations0[l] + span[l] * numSpan[l])
                     str22 = "variable[0,"+ str (l+1) + "] >=  " + str(activations0[l] - span[l] * numSpan[l])
                     str2 = "And(" + str21 + "," + str22 +")"
@@ -282,7 +283,7 @@ def stretch(nfeatures,nfilters,filters,bias,activations0,activations1,span,numSp
                 s_return = s.check()
 
             if 's_return' in locals():
-                if s_return == sat:
+                if s_return == z3.sat:
                     print "found a region for dimension %s with value (span,numSpan) = (%s, %s)"%(k,str(nextSpan[k]),str(nextNumSpan[k]))
                     break
                 else:

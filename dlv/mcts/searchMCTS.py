@@ -6,14 +6,16 @@ A data structure for organising search
 author: Xiaowei Huang
 """
 
+import copy
+import math
 import operator
 import random
 
-from dlv.configuration.configuration import *
+from dlv.configuration import configuration as cfg
 from dlv.safety_check.regionSynth import initialiseRegions
 
 from dlv.basics.inputManipulation import applyManipulation
-from dlv.basics.basics import *
+from dlv.basics import basics
 
 # tunable parameter for MCTS
 cp = 0.5
@@ -55,7 +57,7 @@ class searchMCTS:
         # useless points
         self.uselessPixels = []
         
-        (self.originalClass,self.originalConfident) = NN.predictWithImage(self.model,image)
+        (self.originalClass,self.originalConfident) = cfg.NN.predictWithImage(self.model,image)
         
     def initialiseActions(self): 
         allChildren = initialiseRegions(self.model,self.image,[])
@@ -63,9 +65,9 @@ class searchMCTS:
             self.actions[i] = allChildren[i] 
         
     def initialiseLeafNode(self,index,parentIndex,newSpans,newNumSpans):
-        nprint("initialising a leaf node %s from the node %s"%(index,parentIndex))
-        self.spans[index] = mergeTwoDicts(self.spans[parentIndex],newSpans)
-        self.numSpans[index] = mergeTwoDicts(self.numSpans[parentIndex],newNumSpans)
+        basics.nprint("initialising a leaf node %s from the node %s"%(index,parentIndex))
+        self.spans[index] = basics.mergeTwoDicts(self.spans[parentIndex],newSpans)
+        self.numSpans[index] = basics.mergeTwoDicts(self.numSpans[parentIndex],newNumSpans)
         self.cost[index] = 0
         self.parent[index] = parentIndex 
         self.children[index] = []
@@ -128,12 +130,12 @@ class searchMCTS:
         allValues = {}
         for childIndex in self.children[index]: 
             allValues[childIndex] = self.cost[childIndex]
-        nprint("finding best children from %s"%(allValues))
+        basics.nprint("finding best children from %s"%(allValues))
         return max(allValues.iteritems(), key=operator.itemgetter(1))[0]
         
     def treeTraversal(self,index):
         if self.fullyExpanded[index] == True: 
-            nprint("tree traversal on node %s"%(index))
+            basics.nprint("tree traversal on node %s"%(index))
             allValues = {}
             for childIndex in self.children[index]: 
                 allValues[childIndex] = (self.cost[childIndex] / float(self.numberOfVisited[childIndex])) + cp * math.sqrt(math.log(self.numberOfVisited[index]) / float(self.numberOfVisited[childIndex]))
@@ -141,14 +143,14 @@ class searchMCTS:
             self.usedActionsID.append(self.indexToActionID[nextIndex])
             return self.treeTraversal(nextIndex)
         else: 
-            nprint("tree traversal terminated on node %s"%(index))
+            basics.nprint("tree traversal terminated on node %s"%(index))
             availableActions = copy.deepcopy(self.actions)
             for i in self.usedActionsID: 
                 availableActions.pop(i, None)
             return (index,availableActions)
         
     def initialiseExplorationNode(self,index,availableActions):
-        nprint("expanding %s"%(index))
+        basics.nprint("expanding %s"%(index))
         for (actionId, (span,numSpan,_)) in availableActions.iteritems() : 
             self.indexToNow += 1
             self.indexToActionID[self.indexToNow] = actionId
@@ -174,7 +176,7 @@ class searchMCTS:
         availableActions2.pop(self.indexToActionID[index], None)
         sampleValues = []
         i = 0
-        for i in range(MCTS_multi_samples): 
+        for i in range(cfg.MCTS_multi_samples):
             #allChildren = copy.deepcopy(self.actions)
             (childTerminated, val) = self.sampleNext(self.spans[index],self.numSpans[index],0,availableActions2.keys(),[])
             sampleValues.append(val)
@@ -186,23 +188,23 @@ class searchMCTS:
     def sampleNext(self,spansPath,numSpansPath,depth,availableActionIDs,usedActionIDs): 
         #print spansPath.keys()
         image1 = applyManipulation(self.image,spansPath,numSpansPath)
-        (newClass,newConfident) = NN.predictWithImage(self.model,image1)
+        (newClass,newConfident) = cfg.NN.predictWithImage(self.model,image1)
         #print euclideanDistance(self.image,image1), newConfident, newClass
-        (distMethod,distVal) = controlledSearch
+        (distMethod,distVal) = cfg.controlledSearch
         if distMethod == "euclidean": 
-            dist = euclideanDistance(image1,self.image) 
+            dist = basics.euclideanDistance(image1,self.image)
             termValue = 0.0
             termByDist = dist > distVal
         elif distMethod == "L1": 
-            dist = l1Distance(image1,self.image) 
+            dist = basics.l1Distance(image1,self.image)
             termValue = 0.0
             termByDist = dist > distVal
         elif distMethod == "Percentage": 
-            dist = diffPercent(image1,self.image)
+            dist = basics.diffPercent(image1,self.image)
             termValue = 0.0
             termByDist = dist > distVal
         elif distMethod == "NumDiffs": 
-            dist =  diffPercent(image1,self.image) * self.image.size
+            dist = basics.diffPercent(image1,self.image) * self.image.size
             termValue = 0.0
             termByDist = dist > distVal
 
@@ -226,20 +228,20 @@ class searchMCTS:
             
     def terminalNode(self,index): 
         image1 = applyManipulation(self.image,self.spans[index],self.numSpans[index])
-        (newClass,_) = NN.predictWithImage(self.model,image1)
+        (newClass,_) = cfg.NN.predictWithImage(self.model,image1)
         return newClass != self.originalClass 
         
     def terminatedByControlledSearch(self,index): 
         image1 = applyManipulation(self.image,self.spans[index],self.numSpans[index])
-        (distMethod,distVal) = controlledSearch
+        (distMethod,distVal) = cfg.controlledSearch
         if distMethod == "euclidean": 
-            dist = euclideanDistance(image1,self.image) 
+            dist = basics.euclideanDistance(image1,self.image)
         elif distMethod == "L1": 
-            dist = l1Distance(image1,self.image) 
+            dist = basics.l1Distance(image1,self.image)
         elif distMethod == "Percentage": 
-            dist = diffPercent(image1,self.image)
+            dist = basics.diffPercent(image1,self.image)
         elif distMethod == "NumDiffs": 
-            dist = diffPercent(image1,self.image)
+            dist = basics.diffPercent(image1,self.image)
         print "terminated by controlled search"
         return dist > distVal 
         
@@ -248,27 +250,27 @@ class searchMCTS:
         
     def euclideanDist(self,index): 
         image1 = applyManipulation(self.image,self.spans[index],self.numSpans[index])
-        return euclideanDistance(self.image,image1)
+        return basics.euclideanDistance(self.image,image1)
         
     def l1Dist(self,index): 
         image1 = applyManipulation(self.image,self.spans[index],self.numSpans[index])
-        return l1Distance(self.image,image1)
+        return basics.l1Distance(self.image,image1)
         
     def l0Dist(self,index): 
         image1 = applyManipulation(self.image,self.spans[index],self.numSpans[index])
-        return l0Distance(self.image,image1)
+        return basics.l0Distance(self.image,image1)
         
     def diffImage(self,index): 
         image1 = applyManipulation(self.image,self.spans[index],self.numSpans[index])
-        return diffImage(self.image,image1)
+        return basics.diffImage(self.image,image1)
         
     def diffPercent(self,index): 
         image1 = applyManipulation(self.image,self.spans[index],self.numSpans[index])
-        return diffPercent(self.image,image1)
+        return basics.diffPercent(self.image,image1)
 
     def mergeSpan(self,spansPath,span): 
-        return mergeTwoDicts(spansPath, span)
+        return basics.mergeTwoDicts(spansPath, span)
         
     def mergeNumSpan(self,numSpansPath,numSpan):
-        return mergeTwoDicts(numSpansPath, numSpan)
+        return basics.mergeTwoDicts(numSpansPath, numSpan)
         

@@ -9,9 +9,10 @@ import random
 import time
 import multiprocessing
 
-from z3 import *
+import z3
+import copy
 
-from dlv.configuration.configuration import *
+from dlv.configuration import configuration as cfg
 
 inverseFunction = "point"
 
@@ -44,7 +45,7 @@ def conv_region_solve(nfeatures,nfilters,filters,bias,activations0,activations1,
     
 
     
-    s = Tactic('lra').solver()
+    s = z3.Tactic('lra').solver()
     span = {}
     numSpan = {}
     if len((cl2.keys())[0]) == 2: 
@@ -60,7 +61,7 @@ def conv_region_solve(nfeatures,nfilters,filters,bias,activations0,activations1,
 
 
     if inverseFunction == "area" :
-        inds = [(k,x-x1,y-y1) for k in range(nfilters) for (l,x,y) in span.keys() for x1 in range(filterSize) for y1 in range(filterSize) if x-x1 >= 0 and y-y1 >= 0 and x-x1 < activations1.shape[1] and y-y1 < activations1.shape[2] ]
+        inds = [(k,x-x1,y-y1) for k in range(nfilters) for (l,x,y) in span.keys() for x1 in range(cfg.filterSize) for y1 in range(cfg.filterSize) if x-x1 >= 0 and y-y1 >= 0 and x-x1 < activations1.shape[1] and y-y1 < activations1.shape[2] ]
 
     #print span.keys(), inds
 
@@ -75,7 +76,7 @@ def conv_region_solve(nfeatures,nfilters,filters,bias,activations0,activations1,
         # FIXME: False to skip computation
         while (True): 
             s.reset()
-            variable[1,k+1,x,y] = Real('y_%s_%s_%s' % (k+1,x,y))
+            variable[1,k+1,x,y] = z3.Real('y_%s_%s_%s' % (k+1,x,y))
             str11 = "variable[1,%s,%s,%s] <= %s"%(k+1, x, y, activations1[k][x][y] + nextSpan[(k,x,y)] * nextNumSpan[(k,x,y)])
             str12 = "variable[1,%s,%s,%s] >= %s "%(k+1,x,y, activations1[k][x][y] - nextSpan[(k,x,y)] * nextNumSpan[(k,x,y)])
             str1 = "And(%s,%s)"%(str11,str12)
@@ -86,13 +87,13 @@ def conv_region_solve(nfeatures,nfilters,filters,bias,activations0,activations1,
             postcond = "variable[1,%s,%s,%s] ==  "%(k+1,x,y)
             #print span.keys(), nfeatures, filterSize, filterSize, k, x, y
             for l in range(nfeatures):
-                for x1 in range(filterSize):
-                    for y1 in range(filterSize): 
+                for x1 in range(cfg.filterSize):
+                    for y1 in range(cfg.filterSize):
                         #print("0--(%s,%s,%s)"%(l,x+x1,y+y1))
                         #print span.keys()
                         if (l,x+x1,y+y1) in span.keys(): 
                             #print (l,x+x1,y+y1)
-                            variable[0,l+1,x+x1,y+y1] = Real('x_%s_%s_%s' % (l+1,x+x1,y+y1))
+                            variable[0,l+1,x+x1,y+y1] = z3.Real('x_%s_%s_%s' % (l+1,x+x1,y+y1))
                             str21 = "variable[0,%s,%s,%s] <= %s "%(l+1,x+x1,y+y1, activations0[l][x+x1][y+y1] + span[l,x+x1,y+y1] * numSpan[l,x+x1,y+y1])
 
                             str22 = "variable[0,%s,%s,%s] >= %s "%(l+1,x+x1,y+y1,activations0[l][x+x1][y+y1] - span[l,x+x1,y+y1] * numSpan[l,x+x1,y+y1])
@@ -137,7 +138,7 @@ def conv_region_solve(nfeatures,nfilters,filters,bias,activations0,activations1,
                 s_return = s.check()
 
             if 's_return' in locals():
-                if s_return == sat:
+                if s_return == z3.sat:
                     #print "found a region with value numSpan = " + str(nextNumSpan[k,x,y])
                     break
                 else:

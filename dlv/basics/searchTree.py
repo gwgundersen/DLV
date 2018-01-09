@@ -8,8 +8,8 @@ author: Xiaowei Huang
 
 import copy
 
-from dlv.configuration.configuration import *
 from dlv.safety_check.regionSynth import initialiseRegion
+
 
 class searchTree:
 

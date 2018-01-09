@@ -14,5 +14,3 @@ def maxpooling_safety_solve(input,activations):
         return input
     else: 
         print("input shape %s has not been considered. "%(input.shape))
-
-     

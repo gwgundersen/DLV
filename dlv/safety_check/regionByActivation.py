@@ -7,10 +7,10 @@ author: Xiaowei Huang
 
 import numpy as np
 import copy
-from random import randint, random
+from random import randint
 
-from dlv.configuration.configuration import *
-from dlv.networks.networkBasics import *
+from dlv.configuration import configuration as cfg
+from dlv.networks import networkBasics
 
     
 ############################################################
@@ -28,7 +28,7 @@ def initialiseRegionActivation(model,manipulated,image):
     config = NN.getConfig(model)
 
     # get the type of the current layer
-    layerType = getLayerType(model,0)
+    layerType = networkBasics.getLayerType(model,0)
     #[ lt for (l,lt) in config if l == 0 ]
     #if len(layerType) > 0: layerType = layerType[0]
     #else: print "cannot find the layerType"
@@ -41,36 +41,36 @@ def initialiseRegionActivation(model,manipulated,image):
         nextNumSpan = {}
         if len(image.shape) == 2: 
             # decide how many elements in the input will be considered
-            if image.size < featureDims : 
+            if image.size < cfg.featureDims :
                 numDimsToMani = image.size 
-            else: numDimsToMani = featureDims
+            else: numDimsToMani = cfg.featureDims
             # get those elements with maximal/minimum values
             ls = getTop2DActivation(image,manipulated,[],numDimsToMani,-1)
                             
         elif len(image.shape) == 3:
             # decide how many elements in the input will be considered
-            if image.size < featureDims : 
+            if image.size < cfg.featureDims :
                 numDimsToMani = image.size
-            else: numDimsToMani = featureDims
+            else: numDimsToMani = cfg.featureDims
             # get those elements with maximal/minimum values
             ls = getTop3DActivation(image,manipulated,[],numDimsToMani,-1)
 
         for i in ls: 
-            nextSpan[i] = span
-            nextNumSpan[i] = numSpan
+            nextSpan[i] = cfg.span
+            nextNumSpan[i] = cfg.numSpan
 
     elif layerType == "InputLayer":
         nextSpan = {}
         nextNumSpan = {}
         # decide how many elements in the input will be considered
-        if len(image)  < featureDims : 
+        if len(image)  < cfg.featureDims :
             numDimsToMani = len(image) 
-        else: numDimsToMani = featureDims
+        else: numDimsToMani = cfg.featureDims
         # get those elements with maximal/minimum values
         ls = getTopActivation(image,manipulated,-1,numDimsToMani)
         for i in ls: 
-            nextSpan[i] = span
-            nextNumSpan[i] = numSpan
+            nextSpan[i] = cfg.span
+            nextNumSpan[i] = cfg.numSpan
             
     elif layerType == "ZeroPadding2D": 
         #image1 = addZeroPadding2D(image)
@@ -79,24 +79,24 @@ def initialiseRegionActivation(model,manipulated,image):
         nextNumSpan = {}
         if len(image1.shape) == 2: 
             # decide how many elements in the input will be considered
-            if image1.size < featureDims : 
+            if image1.size < cfg.featureDims :
                 numDimsToMani = image1.size
-            else: numDimsToMani = featureDims
+            else: numDimsToMani = cfg.featureDims
             # get those elements with maximal/minimum values
             ls = getTop2DActivation(image1,manipulated,[],numDimsToMani,-1)
 
 
         elif len(image1.shape) == 3:
             # decide how many elements in the input will be considered
-            if image1.size < featureDims : 
+            if image1.size < cfg.featureDims :
                 numDimsToMani = image1.size
-            else: numDimsToMani = featureDims
+            else: numDimsToMani = cfg.featureDims
             # get those elements with maximal/minimum values
             ls = getTop3DActivation(image1,manipulated,[],numDimsToMani,-1)        
        
         for i in ls: 
-            nextSpan[i] = span
-            nextNumSpan[i] = numSpan
+            nextSpan[i] = cfg.span
+            nextNumSpan[i] = cfg.numSpan
         
     else: 
         print "initialiseRegionActivation: Unknown layer type ... "
@@ -212,11 +212,11 @@ def getRandom3DActivation(image,manipulated,ps,numDimsToMani,layerToConsider):
     for i in range(numDimsToMani): 
         if i <= len(ps) - 1: 
             (x,y) = ps[i] 
-            nps = [ (x-x1,y-y1) for x1 in range(filterSize) for y1 in range(filterSize) if x-x1 >= 0 and y-y1 >=0 ]
+            nps = [ (x-x1,y-y1) for x1 in range(cfg.filterSize) for y1 in range(cfg.filterSize) if x-x1 >= 0 and y-y1 >=0 ]
             pointsToConsider = pointsToConsider + nps
     pointsToConsider = list(set(pointsToConsider))
     
-    ks = getRandom2DActivation(image[maxVarInd],manipulated,ps,numDimsToMani,layerToConsider,pointsToConsider)
+    ks = getRandom2DActivation(image[networkBasics.maxVarInd],manipulated,ps,numDimsToMani,layerToConsider,pointsToConsider)
     
     #print ks, pointsToConsider
     
@@ -327,7 +327,7 @@ def getTop3DActivation(image,manipulated,ps,numDimsToMani,layerToConsider):
     for i in range(numDimsToMani): 
         if i <= len(ps) - 1: 
             (x,y) = ps[i] 
-            nps = [ (x-x1,y-y1) for x1 in range(filterSize) for y1 in range(filterSize) if x-x1 >= 0 and y-y1 >=0 ]
+            nps = [ (x-x1,y-y1) for x1 in range(cfg.filterSize) for y1 in range(cfg.filterSize) if x-x1 >= 0 and y-y1 >=0 ]
             pointsToConsider = pointsToConsider + nps
             ks = ks + findFromArea3D(image,manipulated,avoid,nimage,nps,1,ks)
         else: 

@@ -6,18 +6,14 @@ author: Xiaowei Huang
 """
 
 import sys
+import copy
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import cv2
 import numpy as np
 from keras import backend as K
 from scipy.stats import truncnorm, norm
-
-from dlv.basics.basics import *
-from dlv.networks.networkBasics import *
-from dlv.configuration.configuration import *
 import collections
-
 import matplotlib.pyplot as plt
 import scipy
 from scipy.stats import multivariate_normal
@@ -27,13 +23,15 @@ import operator
 import random
 import cv2
 
+from dlv.configuration import configuration as cfg
+
 ############################################################
 #
 #  initialise SIFT-based manipulations for two-player game
 #
 ################################################################
 
-if dataset == "imageNet": 
+if cfg.dataset == "imageNet":
     imageEnlargeProportion = 1
     maxNumOfPointPerKeyPoint = 100
 else: 

@@ -4,6 +4,8 @@ from __future__ import print_function
 
 import scipy.io as sio
 
+import os
+import numpy as np
 from keras.models import model_from_json
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten
@@ -11,9 +13,9 @@ from keras.layers import Convolution2D, MaxPooling2D
 from keras import backend as K
 
 from keras.optimizers import SGD
+import pandas as pd
 
-
-from gtsrb import * 
+import gtsrb
 
 batch_size = 32
 nb_epoch = 30
@@ -56,7 +58,7 @@ def build_model():
     model.add(Flatten())
     model.add(Dense(512, activation='relu'))
     model.add(Dropout(0.5))
-    model.add(Dense(NUM_CLASSES, activation='softmax'))  
+    model.add(Dense(gtsrb.NUM_CLASSES, activation='softmax'))
 
     # let's train the model using SGD + momentum
 
@@ -82,7 +84,7 @@ def evaluation():
     i = 0
     for file_name, class_id  in zip(list(test['Filename']), list(test['ClassId'])):
         img_path = os.path.join('networks/gtsrb/Final_Test/Images/',file_name)
-        X_test.append(preprocess_img(io.imread(img_path)))
+        X_test.append(gtsrb.preprocess_img(io.imread(img_path)))
         y_test.append(class_id)
     
     X_test = np.array(X_test)
@@ -117,7 +119,7 @@ def read_model_from_file(weightFile,modelFile):
               
 def getImage(model,n_in_tests):
 
-    X, Y = read_dataset()
+    X, Y = gtsrb.read_dataset()
     return X[n_in_tests]
     
     '''
@@ -134,7 +136,7 @@ def getImage(model,n_in_tests):
     
 def getLabel(model,n_in_tests):
 
-    X, Y = read_dataset()
+    X, Y = gtsrb.read_dataset()
     return Y[n_in_tests]
     
 def getConfig(model):

@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 
+import copy
+import math
 import numpy as np
 import random
 import time
 
-from z3 import *
+import z3
 
 
 def bp(timeout,nfeatures,nfilters,filters,bias,input,activations,size):  
@@ -24,13 +26,13 @@ def bp(timeout,nfeatures,nfilters,filters,bias,input,activations,size):
     else: images = input
     (xleft,xright,yleft,yright) = getRegion(images,size)
     
-    s = Tactic('qflra').solver()
+    s = z3.Tactic('qflra').solver()
     s.reset()
     
     for l in range(nfeatures): 
         for x in range(xleft,xright):
             for y in range(yleft,yright):
-                variable[0,l+1,x,y] = Real('x_%s_%s_%s' % (l+1,x,y))
+                variable[0,l+1,x,y] = z3.Real('x_%s_%s_%s' % (l+1,x,y))
                 d += 1
                 # FIXME: apply only when reach the first layer
                 string = "variable[0,"+ str(l+1) + "," + str(x) +"," + str(y)+ "] >= 0 " 
@@ -47,7 +49,7 @@ def bp(timeout,nfeatures,nfilters,filters,bias,input,activations,size):
     for k in range(nfilters): 
         for x in range(xleft2,xright2):
             for y in range(yleft2,yright2): 
-                variable[1,k+1,x,y] = Real('y_%s_%s_%s' % (k+1,x,y))
+                variable[1,k+1,x,y] = z3.Real('y_%s_%s_%s' % (k+1,x,y))
                 d += 1
                 string = "variable[1,"+ str (k+1)  + ","+ str(x) +"," + str(y)+ "] ==  "
                 for l in range(nfeatures): 
@@ -71,7 +73,7 @@ def bp(timeout,nfeatures,nfilters,filters,bias,input,activations,size):
     print "Number of clauses: " + str(c)
     
 
-    if s.check() == sat: 
+    if s.check() == z3.sat:
         inputVars = [ (l,x,y,eval("variable[0,"+ str(l+1) +"," + str(x) +"," + str(y)+ "]")) for k in range(nfilters) for l in range(nfeatures) for x in range(xleft2,xright2) for y in range(yleft2,yright2) if (x,y) in dist[k] ]
         cex = {}
         for (l,i,j,x) in inputVars: 
@@ -87,7 +89,7 @@ def bp(timeout,nfeatures,nfilters,filters,bias,input,activations,size):
     
 
 def getDecimalValue(v0): 
-    v = RealVal(str(v0))
+    v = z3.RealVal(str(v0))
     return long(v.numerator_as_long())/v.denominator_as_long()
     
 def getRegion(images,size):

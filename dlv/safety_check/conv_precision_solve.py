@@ -4,12 +4,13 @@
 author: Xiaowei Huang
 """
 
+import copy
 import numpy as np
 import random
 import time
 import multiprocessing
 
-from z3 import *
+import z3
 
 
 def conv_precision_solve(nfeatures,nfilters,filters,bias,activations0,activations1,span,numSpan,nextSpan,nextNumSpan,pk):  
@@ -34,7 +35,7 @@ def conv_precision_solve(nfeatures,nfilters,filters,bias,activations0,activation
     imageSizeX1 = len(activations1[0])
     imageSizeY1 = len(activations1[0][0])
     
-    s = Tactic('lra').solver()
+    s = z3.Tactic('lra').solver()
 
     npk = copy.deepcopy(pk)
     npk = npk
@@ -51,7 +52,7 @@ def conv_precision_solve(nfeatures,nfilters,filters,bias,activations0,activation
                 # FIXME: false to skip
                 while (False): 
                     s.reset()
-                    variable[0,1,k+1,x,y] = Real('0_y_%s_%s_%s' % (k+1,x,y))
+                    variable[0,1,k+1,x,y] = z3.Real('0_y_%s_%s_%s' % (k+1,x,y))
                     # v_k \in e_k(A_{i,k})
                     str11 = "variable[0,1,"+ str (k+1)  + ","+ str(x) +"," + str(y)+ "] <=  " + str(activations1[k][x][y] + nextSpan * nextNumSpan[k,x,y])
                     str12 = "variable[0,1,"+ str (k+1)  + ","+ str(x) +"," + str(y)+ "] >=  " + str(activations1[k][x][y] - nextSpan * nextNumSpan[k,x,y])
@@ -59,7 +60,7 @@ def conv_precision_solve(nfeatures,nfilters,filters,bias,activations0,activation
                     vklist = "variable[0,1,"+ str (k+1)  + ","+ str(x) +"," + str(y)+ "]"
                     
                     # v_k' \in p_k(v_k)
-                    variable[1,1,k+1,x,y] = Real('1_y_%s_%s_%s' % (k+1,x,y))
+                    variable[1,1,k+1,x,y] = z3.Real('1_y_%s_%s_%s' % (k+1,x,y))
                     str21 = "variable[1,1,"+ str (k+1)  + ","+ str(x) +"," + str(y)+ "] <=  variable[0,1,"+ str (k+1)  + ","+ str(x) +"," + str(y)+ "] + " + str(npk)
                     str22 = "variable[1,1,"+ str (k+1)  + ","+ str(x) +"," + str(y)+ "] >=  variable[0,1,"+ str (k+1)  + ","+ str(x) +"," + str(y)+ "] - " + str(npk)
                     str2 = "And(" + str21 + "," + str22 +")"    
@@ -73,13 +74,13 @@ def conv_precision_solve(nfeatures,nfilters,filters,bias,activations0,activation
                         for x1 in range(3):
                             for y1 in range(3): 
                                 # v_{k-1} \in e_{k-1}(A_{i,k-1})
-                                variable[0,0,l+1,x+x1,y+y1] = Real('0_x_%s_%s_%s' % (l+1,x+x1,y+y1))
+                                variable[0,0,l+1,x+x1,y+y1] = z3.Real('0_x_%s_%s_%s' % (l+1,x+x1,y+y1))
                                 str31 = "variable[0,0,"+ str (l+1)  + ","+ str(x+x1) +"," + str(y+y1)+ "] <=  " + str(activations0[l][x+x1][y+y1] + span * numSpan[l,x+x1,y+y1])
                                 str32 = "variable[0,0,"+ str (l+1)  + ","+ str(x+x1) +"," + str(y+y1)+ "] >=  " + str(activations0[l][x+x1][y+y1] - span * numSpan[l,x+x1,y+y1])
                                 str3 = "And(" + str31 + "," + str32 +")"
 
                                 # v_{k-1}' \in p_{k-1}(v_{k-1})
-                                variable[1,0,l+1,x+x1,y+y1] = Real('1_x_%s_%s_%s' % (l+1,x+x1,y+y1))
+                                variable[1,0,l+1,x+x1,y+y1] = z3.Real('1_x_%s_%s_%s' % (l+1,x+x1,y+y1))
                                 str41 = "variable[1,0,"+ str (l+1)  + ","+ str(x+x1) +"," + str(y+y1)+ "] <=  variable[1,0,"+ str (l+1)  + ","+ str(x+x1) +"," + str(y+y1)+ "] + " + str(pk)
                                 str42 = "variable[1,0,"+ str (l+1)  + ","+ str(x+x1) +"," + str(y+y1)+ "] >=  variable[1,0,"+ str (l+1)  + ","+ str(x+x1) +"," + str(y+y1)+ "] - " + str(pk)
                                 str4 = "And(" + str41 + "," + str42 +")"                                
@@ -132,7 +133,7 @@ def conv_precision_solve(nfeatures,nfilters,filters,bias,activations0,activation
                         s_return = s.check()
 
                     if 's_return' in locals():
-                        if s_return == sat:
+                        if s_return == z3.sat:
                             break
                         else:
                             npk = npk / float(factor)

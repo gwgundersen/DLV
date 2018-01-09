@@ -4,15 +4,16 @@
 author: Xiaowei Huang
 """
 
+import copy
 import numpy as np
 import random
 import time
 import multiprocessing
 
-from z3 import *
+from z3 import Tactic, And, Real, RealVal, sat
 
-from dlv.configuration.configuration import *
-from dlv.basics.basics import *
+from dlv.configuration import configuration as cfg
+from dlv.basics.basics import nprint
 
 inverseFunction = "point"
 
@@ -34,7 +35,7 @@ def conv_safety_solve(layer2Consider,nfeatures,nfilters,filters,bias,input,activ
     
     if len(activations.shape) == 3: 
         avg = np.sum(activations)/float(len(activations)*len(activations[0])*len(activations[0][0]))
-    elif len(activations0.shape) == 2: 
+    elif len(activations[0].shape) == 2:
         avg = np.sum(activations)/float(len(activations)*len(activations[0]))
     else: avg = 0
 
@@ -48,22 +49,23 @@ def conv_safety_solve(layer2Consider,nfeatures,nfilters,filters,bias,input,activ
         if nfeatures == 1: 
             #print("%s\n%s"%(nfeatures,prevSpan.keys()))
             ks = [ (0,x,y) for (x,y) in prevSpan.keys() ]
-        else: ks = copy.deepcopy(prevSpan.keys())
+        else:
+        	ks = copy.deepcopy(prevSpan.keys())
         toBeChanged = toBeChanged + ks
     elif inverseFunction == "area": 
         for (k,x,y) in span.keys():
-             toBeChanged = toBeChanged + [(l,x1,y1) for l in range(nfeatures) for x1 in range(x,x+filterSize) for y1 in range(y,y+filterSize) if x1 >= 0 and y1 >= 0 and x1 < images.shape[1] and y1 < images.shape[2]]
+             toBeChanged = toBeChanged + [(l,x1,y1) for l in range(nfeatures) for x1 in range(x,x+cfg.filterSize) for y1 in range(y,y+cfg.filterSize) if x1 >= 0 and y1 >= 0 and x1 < images.shape[1] and y1 < images.shape[2]]
         toBeChanged = list(set(toBeChanged))
 
     for (l,x,y) in toBeChanged:
         variable[1,0,l+1,x,y] = Real('1_x_%s_%s_%s' % (l+1,x,y))
         d += 1    
-        if not(boundOfPixelValue == [0,0]) and (layer2Consider == 0): 
-            pstr = eval("variable[1,0,%s,%s,%s] <= %s"%(l+1,x,y,boundOfPixelValue[1]))
-            pstr = And(eval("variable[1,0,%s,%s,%s] >= %s"%(l+1,x,y,boundOfPixelValue[0])), pstr)
+        if not(cfg.boundOfPixelValue == [0,0]) and (layer2Consider == 0):
+            pstr = eval("variable[1,0,%s,%s,%s] <= %s"%(l+1,x,y,cfg.boundOfPixelValue[1]))
+            pstr = And(eval("variable[1,0,%s,%s,%s] >= %s"%(l+1,x,y,cfg.boundOfPixelValue[0])), pstr)
             pstr = And(eval("variable[1,0,%s,%s,%s] != %s"%(l+1,x,y,images[l][x][y])), pstr)
             s.add(pstr)
-            c += 1                
+            c += 1       
             
     maxterms = ""
     for (k,x,y) in span.keys():
@@ -71,8 +73,8 @@ def conv_safety_solve(layer2Consider,nfeatures,nfilters,filters,bias,input,activ
         d += 1
         string = "variable[1,1,%s,%s,%s] == "%(k+1,x,y)
         for l in range(nfeatures): 
-           for x1 in range(filterSize):
-                for y1 in range(filterSize): 
+           for x1 in range(cfg.filterSize):
+                for y1 in range(cfg.filterSize):
                     if (l,x+x1,y+y1) in toBeChanged: 
                         newstr1 = " variable[1,0,%s,%s,%s] * %s + "%(l+1,x+x1,y+y1,filters[l,k][x1][y1])
                     elif x+x1 < images.shape[1] and y+y1 < images.shape[2] : 
@@ -82,10 +84,10 @@ def conv_safety_solve(layer2Consider,nfeatures,nfilters,filters,bias,input,activ
         s.add(eval(string))
         c += 1
                     
-        if enumerationMethod == "line": 
-            pstr = eval("variable[1,1,%s,%s,%s] < %s" %(k+1,x,y,activations[k][x][y] + span[(k,x,y)] * numSpan[(k,x,y)] + epsilon))
-            pstr = And(eval("variable[1,1,%s,%s,%s] > %s "%(k+1,x,y,activations[k][x][y] + span[(k,x,y)] * numSpan[(k,x,y)] - epsilon)), pstr)
-        elif enumerationMethod == "convex" or enumerationMethod == "point":
+        if cfg.enumerationMethod == "line":
+            pstr = eval("variable[1,1,%s,%s,%s] < %s" %(k+1,x,y,activations[k][x][y] + span[(k,x,y)] * numSpan[(k,x,y)] + cfg.epsilon))
+            pstr = And(eval("variable[1,1,%s,%s,%s] > %s "%(k+1,x,y,activations[k][x][y] + span[(k,x,y)] * numSpan[(k,x,y)] - cfg.epsilon)), pstr)
+        elif cfg.enumerationMethod == "convex" or cfg.enumerationMethod == "point":
             if activations[k][x][y] + span[(k,x,y)] * numSpan[(k,x,y)] >= 0: 
                 upper = activations[k][x][y] + span[(k,x,y)] * numSpan[(k,x,y)] + pk
                 lower = -1 * (activations[k][x][y] + span[(k,x,y)] * numSpan[(k,x,y)]) - pk
@@ -129,11 +131,11 @@ def conv_safety_solve(layer2Consider,nfeatures,nfilters,filters,bias,input,activ
     p.start()
 
     # Wait for timeout seconds or until process finishes
-    p.join(timeout)
+    p.join(cfg.timeout)
 
     # If thread is still active
     if p.is_alive():
-        print "Solver running more than timeout seconds (default="+str(timeout)+"s)! Skip it"
+        print "Solver running more than timeout seconds (default="+str(cfg.timeout)+"s)! Skip it"
         p.terminate()
         p.join()
     else:

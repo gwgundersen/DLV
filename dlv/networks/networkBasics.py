@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 
-from dlv.configuration.configuration import *
+from dlv.configuration import configuration as cfg
 
 
 def getLayerType(model,layer2Consider):
@@ -9,7 +9,7 @@ def getLayerType(model,layer2Consider):
     if layer2Consider == -1 : 
         return "Input"
     else: 
-        config = NN.getConfig(model)
+        config = cfg.NN.getConfig(model)
 
         # get the type of the current layer
         layerType = [ lt for (l,lt) in config if layer2Consider == l ]

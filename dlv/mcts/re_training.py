@@ -1,10 +1,7 @@
 #!/usr/bin/env python
 
-
 import numpy as np
-from dlv.basics.basics import *
-from dlv.networks.networkBasics import *
-from dlv.configuration.configuration import *
+from dlv.configuration import configuration as cfg
 import scipy.io as sio
 
 
@@ -59,10 +56,10 @@ class re_training:
         xtrain = np.array(self.xtrain)
         ytrain = np.array(self.ytrain)
         
-        if dataset == "mnist": 
-            (X_train, Y_train, X_test, Y_test, batch_size, nb_epoch) = NN.read_dataset()
-        elif dataset == "cifar10":
-            (X_train,Y_train,X_test,Y_test, img_channels, img_rows, img_cols, batch_size, nb_classes, nb_epoch, data_augmentation) = NN.read_dataset()
+        if cfg.dataset == "mnist":
+            (X_train, Y_train, X_test, Y_test, batch_size, nb_epoch) = cfg.NN.read_dataset()
+        elif cfg.dataset == "cifar10":
+            (X_train,Y_train,X_test,Y_test, img_channels, img_rows, img_cols, batch_size, nb_classes, nb_epoch, data_augmentation) = cfg.NN.read_dataset()
 
 
         nb_classes = Y_train.shape[1]
@@ -78,10 +75,10 @@ class re_training:
         print xtrain2.shape, ytrain2.shape, X_train.shape, Y_train.shape    
 
         ae =  "" #"_retrained_%s"%(self.reTrainedModelName)
-        if dataset == "mnist": 
-            model = NN.read_model_from_file('%s/%s%s.mat'%(directory_model_string,dataset,ae),'%s/%s%s.json'%(directory_model_string,dataset,ae))
-        elif dataset == "cifar10": 
-            model = NN.read_model_from_file(img_channels, img_rows, img_cols, nb_classes, '%s/cifar10%s.mat'%(directory_model_string,ae),'%s/cifar10%s.json'%(directory_model_string,ae))
+        if cfg.dataset == "mnist":
+            model = cfg.NN.read_model_from_file('%s/%s%s.mat'%(cfg.directory_model_string,cfg.dataset,ae),'%s/%s%s.json'%(cfg.directory_model_string,cfg.dataset,ae))
+        elif cfg.dataset == "cifar10":
+            model = cfg.NN.read_model_from_file(img_channels, img_rows, img_cols, nb_classes, '%s/cifar10%s.mat'%(cfg.directory_model_string,ae),'%s/cifar10%s.json'%(cfg.directory_model_string,ae))
 
 
         model.compile(loss='categorical_crossentropy',
@@ -92,18 +89,18 @@ class re_training:
         # save model
         ae =  "_retrained_%s"%(self.reTrainedModelName)
         json_string = model.to_json()
-        open('%s/%s%s.json'%(directory_model_string,dataset,ae), 'w').write(json_string)
-        model.save_weights('%s/%s%s.h5'%(directory_model_string,dataset,ae), overwrite=True)
-        sio.savemat('%s/%s%s.mat'%(directory_model_string,dataset,ae), {'weights': model.get_weights()})
+        open('%s/%s%s.json'%(cfg.directory_model_string,cfg.dataset,ae), 'w').write(json_string)
+        model.save_weights('%s/%s%s.h5'%(cfg.directory_model_string,cfg.dataset,ae), overwrite=True)
+        sio.savemat('%s/%s%s.mat'%(cfg.directory_model_string,cfg.dataset,ae), {'weights': model.get_weights()})
         
         return model
         
     def evaluateWithOriginalModel(self): 
 
-        if dataset == "mnist": 
-            (X_train, Y_train, X_test, Y_test, batch_size, nb_epoch) = NN.read_dataset()
-        elif dataset == "cifar10":
-            (X_train,Y_train,X_test,Y_test, img_channels, img_rows, img_cols, batch_size, nb_classes, nb_epoch, data_augmentation) = NN.read_dataset()
+        if cfg.dataset == "mnist":
+            (X_train, Y_train, X_test, Y_test, batch_size, nb_epoch) = cfg.NN.read_dataset()
+        elif cfg.dataset == "cifar10":
+            (X_train,Y_train,X_test,Y_test, img_channels, img_rows, img_cols, batch_size, nb_classes, nb_epoch, data_augmentation) = cfg.NN.read_dataset()
     
         self.originalModel.compile(loss='categorical_crossentropy',
                                    optimizer='adadelta',
@@ -113,15 +110,15 @@ class re_training:
         return scoreReport
         
     def evaluateWithUpdatedModel(self): 
-        if dataset == "mnist": 
-            (X_train, Y_train, X_test, Y_test, batch_size, nb_epoch) = NN.read_dataset()
+        if cfg.dataset == "mnist":
+            (X_train, Y_train, X_test, Y_test, batch_size, nb_epoch) = cfg.NN.read_dataset()
             ae =  "_retrained_%s"%(self.reTrainedModelName) 
-            model = NN.read_model_from_file('%s/%s%s.mat'%(directory_model_string,dataset,ae),'%s/%s%s.json'%(directory_model_string,dataset,ae))
+            model = cfg.NN.read_model_from_file('%s/%s%s.mat'%(cfg.directory_model_string,cfg.dataset,ae),'%s/%s%s.json'%(cfg.directory_model_string,cfg.dataset,ae))
 
-        elif dataset == "cifar10":
-            (X_train,Y_train,X_test,Y_test, img_channels, img_rows, img_cols, batch_size, nb_classes, nb_epoch, data_augmentation) = NN.read_dataset()
+        elif cfg.dataset == "cifar10":
+            (X_train,Y_train,X_test,Y_test, img_channels, img_rows, img_cols, batch_size, nb_classes, nb_epoch, data_augmentation) = cfg.NN.read_dataset()
             ae =  "_retrained_%s"%(self.reTrainedModelName) 
-            model = NN.read_model_from_file(img_channels, img_rows, img_cols, nb_classes, '%s/%s%s.mat'%(directory_model_string,dataset,ae),'%s/%s%s.json'%(directory_model_string,dataset,ae))
+            model = cfg.NN.read_model_from_file(img_channels, img_rows, img_cols, nb_classes, '%s/%s%s.mat'%(cfg.directory_model_string, cfg.dataset,ae),'%s/%s%s.json'%(cfg.directory_model_string,cfg.dataset,ae))
 
         model.compile(loss='categorical_crossentropy',
                       optimizer='adadelta',

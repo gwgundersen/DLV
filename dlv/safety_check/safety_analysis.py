@@ -11,14 +11,15 @@ from operator import mul
 
 import matplotlib.pyplot as plt
 
+import conv_bp
 from conv_safety_solve import conv_safety_solve
 from dense_safety_solve import dense_safety_solve
 from flatten_safety_solve import flatten_safety_solve
 from maxpooling_safety_solve import maxpooling_safety_solve
 
-from dlv.basics.basics import *
-from dlv.networks.networkBasics import *
-from dlv.configuration.configuration import *
+from dlv.basics import basics
+from dlv.networks import networkBasics
+from dlv.configuration import configuration as cfg
 
 
 def safety_analysis(model,dataset,layer2Consider,imageIndex,st,index,cl2,gl2,cp):
@@ -26,18 +27,18 @@ def safety_analysis(model,dataset,layer2Consider,imageIndex,st,index,cl2,gl2,cp)
     originalIndex = copy.deepcopy(index)
     (originalImage,prevSpan,prevNumSpan,numDimsToMani,stepsUpToNow) = st.getInfo(index)
     
-    config = NN.getConfig(model)
+    config = cfg.NN.getConfig(model)
         
     # get weights and bias of the entire trained neural network
-    (wv,bv) = NN.getWeightVector(model,layer2Consider)
+    (wv,bv) = cfg.NN.getWeightVector(model,layer2Consider)
     
     # save the starting layer 
     originalLayer2Consider = copy.deepcopy(layer2Consider)
     
     # predict with neural network
-    (originalSpanass,originalConfident) = NN.predictWithImage(model,originalImage)
+    (originalSpanass,originalConfident) = cfg.NN.predictWithImage(model,originalImage)
 
-    classstr = "the right class is " + (str(dataBasics.LABELS(int(originalSpanass))))
+    classstr = "the right class is " + (str(cfg.dataBasics.LABELS(int(originalSpanass))))
     print classstr
     classstr = "the confidence is " + (str(originalConfident))
     print classstr
@@ -59,11 +60,11 @@ def safety_analysis(model,dataset,layer2Consider,imageIndex,st,index,cl2,gl2,cp)
     
     originalSpan = copy.deepcopy(span)
     originalNumSpan = copy.deepcopy(numSpan)
-    if enumerationMethod == "convex": 
+    if cfg.enumerationMethod == "convex":
         allRounds = reduce(mul,map(lambda x: 2, numSpan.values()),1)
-    elif enumerationMethod == "line": 
+    elif cfg.enumerationMethod == "line":
         allRounds = reduce(mul,map(lambda x: 2*x + 1, numSpan.values()),1)
-    elif enumerationMethod == "point": 
+    elif cfg.enumerationMethod == "point":
         allRounds = 1
     print "%s regions need to be checked. "%(allRounds)
     
@@ -84,79 +85,79 @@ def safety_analysis(model,dataset,layer2Consider,imageIndex,st,index,cl2,gl2,cp)
     while (not cond) or layer2Consider > 0 :
     
         if layer2Consider == originalLayer2Consider: 
-            activations = NN.getActivationValue(model,originalLayer2Consider,originalImage)
+            activations = cfg.NN.getActivationValue(model,originalLayer2Consider,originalImage)
             activations1 = imageFromGL(activations,counter_numSpan,span)
             cond = equalCounters(counter_numSpan,numSpan)
             
-        nprint("\nin round: %s / %s"%(round, allRounds))
-        nprint("layer: " + str(layer2Consider))
-        nprint("counter_numSpan %s"%(counter_numSpan))
-        nprint("numSpan %s"%(numSpan))
+        basics.nprint("\nin round: %s / %s"%(round, allRounds))
+        basics.nprint("layer: " + str(layer2Consider))
+        basics.nprint("counter_numSpan %s"%(counter_numSpan))
+        basics.nprint("numSpan %s"%(numSpan))
         #print "maximal point %s"%(numSpan)
         #print "activations1=%s"%(activations1)
 
         # get the type of the current layer
-        layerType = getLayerType(model,layer2Consider)
+        layerType = networkBasics.getLayerType(model,layer2Consider)
         #[ lt for (l,lt) in config if layer2Consider == l ]
         #if len(layerType) > 0: layerType = layerType[0]
         #else: print "cannot find the layerType"
 
         # get the weights and bias for the current layer
-        wv2Consider, bv2Consider = getWeight(wv,bv,layer2Consider)
+        wv2Consider, bv2Consider = basics.getWeight(wv,bv,layer2Consider)
                 
         # call different solving approaches according to 
         # the type of the layer and the type of the algorithm
         # FIXME: need to expand this to work with other cases, e.g., MaxPooling2D, Convolution3D
         if layerType == "Convolution2D" or layerType == "Conv2D":
-            nprint("convolutional layer, back-propagating ...") 
+            basics.nprint("convolutional layer, back-propagating ...")
             if layer2Consider == 0 : 
                 activations0 = copy.deepcopy(originalImage)
-            else: activations0 = NN.getActivationValue(model,layer2Consider-1,originalImage)
-            string = directory_pic_string+"/"+str(imageIndex)+"_original_as_"+str(originalSpanass)
-            (bl,newInput) = conv_solve_prep(model,dataBasics,string,originalLayer2Consider,layer2Consider,prevSpan,prevNumSpan,counter_numSpan,numSpan,cp,activations0,wv2Consider,bv2Consider,activations1)
+            else: activations0 = cfg.NN.getActivationValue(model,layer2Consider-1,originalImage)
+            string = cfg.directory_pic_string+"/"+str(imageIndex)+"_original_as_"+str(originalSpanass)
+            (bl,newInput) = conv_solve_prep(model,cfg.dataBasics,string,originalLayer2Consider,layer2Consider,prevSpan,prevNumSpan,counter_numSpan,numSpan,cp,activations0,wv2Consider,bv2Consider,activations1)
 
             
         elif layerType == "Dense":  
-            nprint("dense layer, back propogation ... ")
+            basics.nprint("dense layer, back propogation ... ")
             if layer2Consider == 0 : 
                 activations0 = copy.deepcopy(originalImage)
-            else: activations0 = NN.getActivationValue(model,layer2Consider-1,originalImage)
-            string = directory_pic_string+"/"+str(imageIndex)+"_original_as_"+str(originalSpanass)
-            (bl,newInput) = dense_solve_prep(model,dataBasics,string,prevSpan,prevNumSpan,counter_numSpan,numSpan,cp,activations0,wv2Consider,bv2Consider,activations1)
+            else: activations0 = cfg.NN.getActivationValue(model,layer2Consider-1,originalImage)
+            string = cfg.directory_pic_string+"/"+str(imageIndex)+"_original_as_"+str(originalSpanass)
+            (bl,newInput) = dense_solve_prep(model,cfg.dataBasics,string,prevSpan,prevNumSpan,counter_numSpan,numSpan,cp,activations0,wv2Consider,bv2Consider,activations1)
             
         elif layerType == "InputLayer":
-            nprint("inputLayer layer, back-propagating ... ")
+            basics.nprint("inputLayer layer, back-propagating ... ")
             (bl,newInput) = (True, copy.deepcopy(activations1))
     
         elif layerType == "relu":
-            nprint("relu layer, back-propagating ...")
+            basics.nprint("relu layer, back-propagating ...")
             (bl,newInput) = (True, copy.deepcopy(activations1))
 
         elif layerType == "ZeroPadding2D":
-            nprint("ZeroPadding2D layer, solving ... ")
-            image1 = NN.removeZeroPadding2D(activations1)
+            basics.nprint("ZeroPadding2D layer, solving ... ")
+            image1 = cfg.NN.removeZeroPadding2D(activations1)
             (bl,newInput) = (True,image1)
 
         elif layerType == "MaxPooling2D":
-            nprint("MaxPooling2D layer, solving ... ")
+            basics.nprint("MaxPooling2D layer, solving ... ")
             if layer2Consider == 0 : 
                 activations0 = copy.deepcopy(originalImage)
-            else: activations0 = NN.getActivationValue(model,layer2Consider-1,originalImage)
+            else: activations0 = cfg.NN.getActivationValue(model,layer2Consider-1,originalImage)
             image1 = maxpooling_safety_solve(activations0,activations1)
             (bl,newInput) = (True,image1)
 
         elif layerType == "Flatten":
-            nprint("Flatten layer, solving ... ")
+            basics.nprint("Flatten layer, solving ... ")
             if layer2Consider == 0 : 
                 activations0 = copy.deepcopy(originalImage)
-            else: activations0 = NN.getActivationValue(model,layer2Consider-1,originalImage)
+            else: activations0 = cfg.NN.getActivationValue(model,layer2Consider-1,originalImage)
             image1 = flatten_safety_solve(activations0,activations1)
             (bl,newInput) = (True,image1)
             
         # decide the next step according to the results from the solving
         if bl == False:   
             # if back-propagation fails    
-            nprint("back-propagation or solving fails ... ")
+            basics.nprint("back-propagation or solving fails ... ")
             
             if rkupdated == False: 
                 #rk.append((newInput,originalConfident))
@@ -181,8 +182,8 @@ def safety_analysis(model,dataset,layer2Consider,imageIndex,st,index,cl2,gl2,cp)
             layer2Consider -= 1
             activations1 = copy.deepcopy(newInput)
             index = st.parentIndexForIntermediateNode(index,layer2Consider)
-            nprint("backtrack to index %s in layer %s"%(index,layer2Consider))
-            activations = NN.getActivationValue(model,layer2Consider,originalImage)
+            basics.nprint("backtrack to index %s in layer %s"%(index,layer2Consider))
+            activations = cfg.NN.getActivationValue(model,layer2Consider,originalImage)
             counter_numSpan = getCounter(activations,newInput,prevSpan,prevNumSpan)
             span = copy.deepcopy(prevSpan)
             numSpan = copy.deepcopy(prevNumSpan)
@@ -198,28 +199,28 @@ def safety_analysis(model,dataset,layer2Consider,imageIndex,st,index,cl2,gl2,cp)
             
             if dataset == "imageNet": newInput = normalise(newInput)
             
-            nprint("counter: %s"%counter_numSpans[originalLayer2Consider])
-            nprint("input: %s"%newInput)
+            basics.nprint("counter: %s"%counter_numSpans[originalLayer2Consider])
+            basics.nprint("input: %s"%newInput)
 
 
-            (newClass,confident) = NN.predictWithImage(model,newInput)            
+            (newClass,confident) = cfg.NN.predictWithImage(model,newInput)
             if dataset == "twoDcurve": plt.plot([newInput[0]], [newInput[1]], 'g.')
 
-            nprint("confident level: " + str(confident))
+            basics.nprint("confident level: " + str(confident))
             # Great! we found an image which has different class with the original image
             if newClass != originalSpanass: 
-                newClassStr = dataBasics.LABELS(int(newClass))
-                origClassStr = dataBasics.LABELS(int(originalSpanass))
+                newClassStr = cfg.dataBasics.LABELS(int(newClass))
+                origClassStr = cfg.dataBasics.LABELS(int(originalSpanass))
                 classstr = "Class changed! from " + str(origClassStr) +" into " + str(newClassStr)
                 print classstr
                 rk.append((newInput,confident))
 
-                path1 = "%s/%s_%s_modified_into_%s_with_confidence_%s.png"%(directory_pic_string,imageIndex,origClassStr,newClassStr,confident)
-                dataBasics.save(index[0],newInput, path1)
+                path1 = "%s/%s_%s_modified_into_%s_with_confidence_%s.png"%(cfg.directory_pic_string,imageIndex,origClassStr,newClassStr,confident)
+                cfg.dataBasics.save(index[0],newInput, path1)
 
                 # add a point whose class is wrong
                 wk.append(newInput)
-                if exitWhen == "foundFirst": break
+                if cfg.exitWhen == "foundFirst": break
                 
             else: 
                 #oldconf = rk[0][1]
@@ -297,7 +298,7 @@ def withinRegion(newInput,st):
     cls = span.keys()
     wr = True
     for l in cls: 
-        if dataset == "imageNet":
+        if cfg.dataset == "imageNet":
             return True
             #(x,y,z) = l
             #if x == 0:
@@ -310,8 +311,8 @@ def withinRegion(newInput,st):
             #    wr = wr and (newInput[l] + 123.68 >= 0)
             #    wr = wr and (newInput[l] + 123.68 <= 255)
         else:
-            wr = wr and (newInput[l] >= image0[l] - span[l] * numSpan[l] - epsilon)
-            wr = wr and (newInput[l] <= image0[l] + span[l] * numSpan[l] + epsilon)
+            wr = wr and (newInput[l] >= image0[l] - span[l] * numSpan[l] - cfg.epsilon)
+            wr = wr and (newInput[l] <= image0[l] + span[l] * numSpan[l] + cfg.epsilon)
 
     return wr
     
@@ -347,9 +348,9 @@ def normalise(image):
 def conv_solve_prep(model,dataBasics,string,originalLayer2Consider,layer2Consider,prevSpan,prevNumSpan,span,numSpan,cp,input,wv,bv,activations):
 
     # filters can be seen as the output of a convolutional layer
-    nfilters = numberOfFilters(wv)
+    nfilters = basics.numberOfFilters(wv)
     # features can be seen as the inputs for a convolutional layer
-    nfeatures = numberOfFeatures(wv)
+    nfeatures = basics.numberOfFeatures(wv)
 
     # space holders for computation values
     biasCollection = {}
@@ -378,7 +379,7 @@ def conv_solve_prep(model,dataBasics,string,originalLayer2Consider,layer2Conside
     else: 
         (bl1,newInput) = conv_safety_solve(layer2Consider,nfeatures,nfilters,filterCollection,biasCollection,input,activations,prevSpan,prevNumSpan,span,numSpan,cp)
         
-    nprint("completed a round of processing of the entire image ")
+    basics.nprint("completed a round of processing of the entire image ")
     return (bl1,newInput)
     
 #######################################################################################
@@ -390,9 +391,9 @@ def conv_solve_prep(model,dataBasics,string,originalLayer2Consider,layer2Conside
 def dense_solve_prep(model,dataBasics,string,prevSpan,prevNumSpan,span,numSpan,cp,input,wv,bv,activations):
 
     # filters can be seen as the output of a convolutional layer
-    nfilters = numberOfFilters(wv)
+    nfilters = basics.numberOfFilters(wv)
     # features can be seen as the inputs for a convolutional layer
-    nfeatures = numberOfFeatures(wv)
+    nfeatures = basics.numberOfFeatures(wv)
 
     # space holders for computation values
     biasCollection = {}
@@ -408,7 +409,7 @@ def dense_solve_prep(model,dataBasics,string,prevSpan,prevNumSpan,span,numSpan,c
    
     (bl1,newInput) = dense_safety_solve(nfeatures,nfilters,filterCollection,biasCollection,input,activations,prevSpan,prevNumSpan,span,numSpan,cp)
         
-    nprint("completed a round of processing ")
+    basics.nprint("completed a round of processing ")
     return (bl1,newInput)
     
     
@@ -421,11 +422,11 @@ def dense_solve_prep(model,dataBasics,string,prevSpan,prevNumSpan,span,numSpan,c
 
 def counterPlusOne(counter_numSpan,numSpan,InitialisedNumSpan):
 
-    if enumerationMethod == "line": 
+    if cfg.enumerationMethod == "line":
         return counterPlusOne0(counter_numSpan,numSpan,InitialisedNumSpan)
-    elif enumerationMethod == "convex": 
+    elif cfg.enumerationMethod == "convex":
         return counterPlusOne1(counter_numSpan,numSpan,InitialisedNumSpan)
-    elif enumerationMethod == "point": 
+    elif cfg.enumerationMethod == "point":
         return numSpan
 
 ## explore outmost spaces 
@@ -529,20 +530,20 @@ def diffImage(image1,image2):
         for x in range(len(image1)):
                 if image1[x] != image2[x]: 
                     i += 1
-                    nprint("dimension %s is changed from %s to %s"%(x,image1[x],image2[x]))
+                    basics.nprint("dimension %s is changed from %s to %s"%(x,image1[x],image2[x]))
     elif len(image1.shape) == 2:
         for x in range(len(image1)):
             for y in range(len(image1[0])):
                 if image1[x][y] != image2[x][y]: 
                     i += 1
-                    nprint("dimension (%s,%s) is changed from %s to %s"%(x,y,image1[x][y],image2[x][y]))
+                    basics.nprint("dimension (%s,%s) is changed from %s to %s"%(x,y,image1[x][y],image2[x][y]))
     elif len(image1.shape) == 3:
         for x in range(len(image1)):
             for y in range(len(image1[0])):
                 for z in range(len(image1[0])):
                     if image1[x][y][z] != image2[x][y][z]: 
                         i += 1
-                        nprint("dimension (%s,%s,%s) is changed from %s to %s"%(x,y,z,image1[x][y][z],image2[x][y][z]))
+                        basics.nprint("dimension (%s,%s,%s) is changed from %s to %s"%(x,y,z,image1[x][y][z],image2[x][y][z]))
     print("%s elements have been changed!"%i)
     
 ############################################################################
@@ -553,8 +554,8 @@ def diffImage(image1,image2):
 
 def conv_bp_prep(model,input,wv,bv,activations):
 
-    nfilters = numberOfFilters(wv)
-    nfeatures = numberOfFeatures(wv)
+    nfilters = basics.numberOfFilters(wv)
+    nfeatures = basics.numberOfFeatures(wv)
     
     print "number of filters: " + str(nfilters)
     print "number of features in the previous layer: " + str(nfeatures)

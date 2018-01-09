@@ -4,7 +4,7 @@ import numpy as np
 import random
 import time
 
-from z3 import *
+import z3
 
 
 def bp(input,activations):  
@@ -23,15 +23,15 @@ def bp(input,activations):
     for l in range(nfeatures): 
         for x in range(xsize):
             for y in range(ysize):
-                variable[0,l+1,x,y] = Real('x_%s_%s_%s' % (l+1,x,y))
+                variable[0,l+1,x,y] = z3.Real('x_%s_%s_%s' % (l+1,x,y))
                 d += 1
             
-        s = Tactic('qflra').solver()
+        s = z3.Tactic('qflra').solver()
         s.reset()
 
         for x in range(xsize):
             for y in range(ysize): 
-                variable[1,l+1,x,y] = Real('y_%s_%s_%s' % (l+1,x,y))
+                variable[1,l+1,x,y] = z3.Real('y_%s_%s_%s' % (l+1,x,y))
                 d += 1
                 str1 = "And(variable[1,"+ str (l+1)  + ","+ str(x) +"," + str(y)+ "] >= 0, "
                 str1 += "variable[1,"+ str (l+1)  + ","+ str(x) +"," + str(y)+ "] ==  "
@@ -52,7 +52,7 @@ def bp(input,activations):
         print "Number of variables per feature: " + str(d)
         print "Number of clauses per feature: " + str(c)
     
-        if s.check() == sat: 
+        if s.check() == z3.sat:
             inputVars = [ (l,x,y,eval("variable[0,"+ str(l+1) +"," + str(x) +"," + str(y)+ "]")) for x in range(xsize) for y in range(ysize) ]
             cex = {}
             for (l,i,j,x) in inputVars: 
@@ -72,7 +72,7 @@ def bp(input,activations):
    
 
 def getDecimalValue(v0): 
-    v = RealVal(str(v0))
+    v = z3.RealVal(str(v0))
     return long(v.numerator_as_long())/v.denominator_as_long()
     
     
