@@ -112,8 +112,8 @@ def initialiseSiftKeypointsTwoPlayer(model,image,manipulated):
             
             if len(ls) > 0: 
                 for j in ls: 
-                    nextSpan[j] = span
-                    nextNumSpan[j] = numSpan            
+                    nextSpan[j] = cfg.span
+                    nextNumSpan[j] = cfg.numSpan
                 oneRegion = (nextSpan,nextNumSpan,local_featureDims)
                 allRegions.append(oneRegion)
             i += 1
@@ -142,7 +142,7 @@ def SIFT_Filtered_twoPlayer(image): #threshold=0.0):
     
 def getPoints_twoPlayer(image, kps):
     points = {}
-    if dataset != "imageNet": 
+    if cfg.dataset != "imageNet":
         for x in range(max(image.shape)): 
             for y in range(max(image.shape)): 
                 ps = 0
@@ -418,7 +418,7 @@ def GMM(image):
     else: 
         image1 = image1.astype(np.uint8)
 
-    if dataset == "imageNet": 
+    if cfg.dataset == "imageNet":
         imageEnlargeProportion = 1
     else: 
         imageEnlargeProportion = 2

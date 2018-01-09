@@ -25,7 +25,7 @@ repeatedManipulation = "disallowed"
  
 def initialiseRegionActivation(model,manipulated,image): 
 
-    config = NN.getConfig(model)
+    config = cfg.NN.getConfig(model)
 
     # get the type of the current layer
     layerType = networkBasics.getLayerType(model,0)

@@ -57,7 +57,7 @@ def conv_region_solve(nfeatures,nfilters,filters,bias,activations0,activations1,
     else: 
         span = copy.deepcopy(cl2)
         numSpan = copy.deepcopy(gl2)
-        
+
 
 
     if inverseFunction == "area" :
@@ -79,7 +79,7 @@ def conv_region_solve(nfeatures,nfilters,filters,bias,activations0,activations1,
             variable[1,k+1,x,y] = z3.Real('y_%s_%s_%s' % (k+1,x,y))
             str11 = "variable[1,%s,%s,%s] <= %s"%(k+1, x, y, activations1[k][x][y] + nextSpan[(k,x,y)] * nextNumSpan[(k,x,y)])
             str12 = "variable[1,%s,%s,%s] >= %s "%(k+1,x,y, activations1[k][x][y] - nextSpan[(k,x,y)] * nextNumSpan[(k,x,y)])
-            str1 = "And(%s,%s)"%(str11,str12)
+            str1 = "z3.And(%s,%s)"%(str11,str12)
                     
             forallVarlist = ""
             precond = ""
@@ -98,10 +98,10 @@ def conv_region_solve(nfeatures,nfilters,filters,bias,activations0,activations1,
 
                             str22 = "variable[0,%s,%s,%s] >= %s "%(l+1,x+x1,y+y1,activations0[l][x+x1][y+y1] - span[l,x+x1,y+y1] * numSpan[l,x+x1,y+y1])
 
-                            str2 = "And(%s,%s)"%(str21,str22)
+                            str2 = "z3.And(%s,%s)"%(str21,str22)
                             if precond == "": 
                                 precond = str2
-                            else: precond = "And(%s,%s)"%(precond,str2) 
+                            else: precond = "z3.And(%s,%s)"%(precond,str2)
                             if forallVarlist == "":
                                 forallVarlist = "[variable[0,%s,%s,%s]"%(l+1,x+x1,y+y1)
                             else: 
@@ -115,7 +115,7 @@ def conv_region_solve(nfeatures,nfilters,filters,bias,activations0,activations1,
             postcond += str(bias[l,k])
                     
             forallVarlist += "]"
-            formula = "ForAll(%s, Implies(%s, Exists(%s, And(%s,%s))))"%(forallVarlist,precond,existsVarList,str1,postcond)
+            formula = "z3.ForAll(%s, z3.Implies(%s, z3.Exists(%s, z3.And(%s,%s))))"%(forallVarlist,precond,existsVarList,str1,postcond)
 
             s.add(eval(formula))
 
