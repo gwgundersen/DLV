@@ -10,7 +10,6 @@ import copy
 from random import randint
 
 from dlv.configuration import configuration as cfg
-from dlv.networks import networkBasics
 
     
 ############################################################
@@ -25,10 +24,8 @@ repeatedManipulation = "disallowed"
  
 def initialiseRegionActivation(model,manipulated,image): 
 
-    config = cfg.NN.getConfig(model)
-
     # get the type of the current layer
-    layerType = networkBasics.getLayerType(model,0)
+    layerType = model.getLayerType(0)
     #[ lt for (l,lt) in config if l == 0 ]
     #if len(layerType) > 0: layerType = layerType[0]
     #else: print "cannot find the layerType"
@@ -185,121 +182,6 @@ def getTop2DActivation(image,manipulated,ps,numDimsToMani,layerToConsider):
         del topImage[(k1,k2)]
         
     return topImage.keys()
-
-# ps are indices of the previous layer
-
-def getRandom3DActivation(image,manipulated,ps,numDimsToMani,layerToConsider): 
-
-    #print numDimsToMani, ps
-    avoid = repeatedManipulation == "disallowed"
-
-    #avg = np.sum(image)/float(len(image)*len(image[0]*len(image[0][0])))
-    #nimage = copy.deepcopy(image)
-    #for i in range(len(image)): 
-    #    for j in range(len(image[0])):
-    #        for k in range(len(image[0][0])):
-    #            nimage[i][j][k] = abs(avg - image[i][j][k])
-    
-    # find a two-dimensional with maximal variance
-    ind = randint(1,image.shape[0])
-    
-    if len(ps) > 0: 
-        if len(ps[0]) == 3: 
-            (p1,p2,p3) = zip(*ps)
-            ps = zip(p2,p3)
-    
-    pointsToConsider = []
-    for i in range(numDimsToMani): 
-        if i <= len(ps) - 1: 
-            (x,y) = ps[i] 
-            nps = [ (x-x1,y-y1) for x1 in range(cfg.filterSize) for y1 in range(cfg.filterSize) if x-x1 >= 0 and y-y1 >=0 ]
-            pointsToConsider = pointsToConsider + nps
-    pointsToConsider = list(set(pointsToConsider))
-    
-    ks = getRandom2DActivation(image[networkBasics.maxVarInd],manipulated,ps,numDimsToMani,layerToConsider,pointsToConsider)
-    
-    #print ks, pointsToConsider
-    
-    return map(lambda (x,y): (ind,x,y),ks)
-
-'''
-
-def getTop3DActivation(image,manipulated,ps,numDimsToMani,layerToConsider): 
-
-    #print numDimsToMani, ps
-    avoid = repeatedManipulation == "disallowed"
-    
-
-    #avg = np.sum(image)/float(len(image)*len(image[0]*len(image[0][0])))
-    #nimage = copy.deepcopy(image)
-    #for i in range(len(image)): 
-    #    for j in range(len(image[0])):
-    #        for k in range(len(image[0][0])):
-    #            nimage[i][j][k] = abs(avg - image[i][j][k])
-    
-    # find a two-dimensional with maximal variance
-    maxVarInd = np.argmax(np.var(image, axis=(1,2)))
-    
-    if len(ps) > 0: 
-        if len(ps[0]) == 3: 
-            (p1,p2,p3) = zip(*ps)
-            ps = zip(p2,p3)
-            
-    manipulatedInMaxVarInd = [ (y,z) for (x,y,z) in  manipulated if x == maxVarInd ]
-    
-    pointsToConsider = []
-    ks = []
-    for i in range(numDimsToMani): 
-        if i <= len(ps) - 1: 
-            (x,y) = ps[i] 
-            nps = [ (x-x1,y-y1) for x1 in range(filterSize) for y1 in range(filterSize) if x-x1 >= 0 and y-y1 >=0 ]
-        else: 
-            nps = [ (x1,y1) for x1 in range(len(image[0])) for y1 in range(len(image[0][0])) ]
-        pointsToConsider = list(set(nps) - set(ks))
-        ks += getTop2DActivationWithConstraint(image[maxVarInd],manipulatedInMaxVarInd,ps,1,layerToConsider,pointsToConsider)
-    
-    #ks = getTop2DActivationWithConstraint(image[maxVarInd],manipulated,ps,numDimsToMani,layerToConsider,pointsToConsider)
-
-    
-    #print manipulated, manipulatedInMaxVarInd, ks
-    
-    return map(lambda (x,y): (maxVarInd,x,y),ks)
-
-
-def getTop2DActivationWithConstraint(image,manipulated,ps,numDimsToMani,layerToConsider,pointsToConsider): 
-
-    avoid = repeatedManipulation == "disallowed"
-
-    #avg = np.sum(image)/float(len(image)*len(image[0]))
-    #nimage = copy.deepcopy(image)
-    #for i in range(len(image)): 
-    #    for j in range(len(image[0])):
-    #        nimage[i][j] = abs(avg - image[i][j])
-            
-    avg = np.average(image)
-    nimage = np.absolute(image - avg) 
-            
-    topImage = {}
-    toBeDeleted = []
-    for i in range(len(image)):
-        for j in range(len(image[0])):
-            if len(topImage) < numDimsToMani and ((i,j) in pointsToConsider or len(pointsToConsider) == 0): 
-                topImage[(i,j)] = nimage[i][j]
-            elif ((i,j) in pointsToConsider or len(pointsToConsider) == 0): 
-                bl = False 
-                for (k1,k2), v in topImage.iteritems():
-                    if v < nimage[i][j] and not ((k1,k2) in toBeDeleted) and ((not avoid) or ((i,j) not in manipulated)):  
-                        toBeDeleted.append((k1,k2))
-                        bl = True
-                        break
-                if bl == True: 
-                    topImage[(i,j)] = nimage[i][j]
-    for (k1,k2) in toBeDeleted: 
-        del topImage[(k1,k2)]
-    return topImage.keys()
-
-
-'''
 
 
 def getTop3DActivation(image,manipulated,ps,numDimsToMani,layerToConsider): 

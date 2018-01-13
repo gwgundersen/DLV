@@ -8,7 +8,7 @@ author: Xiaowei Huang
 from dlv.configuration import configuration as cfg
 
 
-class dataCollection:
+class DataCollection:
 
     index = 0
     layer = 0

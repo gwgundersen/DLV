@@ -8,10 +8,10 @@ author: Xiaowei Huang
 
 import copy
 
-from dlv.safety_check.regionSynth import initialiseRegion
+from dlv.safety.regionSynth import initialiseRegion
 
 
-class searchTree:
+class SearchTree:
 
     # used to store historical images, spans and numSpans
     # a pair (i,p) is used to represent the index i of the current 

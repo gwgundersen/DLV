@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 """
 author: Xiaowei Huang
 """
@@ -18,7 +16,6 @@ from flatten_safety_solve import flatten_safety_solve
 from maxpooling_safety_solve import maxpooling_safety_solve
 
 from dlv.basics import basics
-from dlv.networks import networkBasics
 from dlv.configuration import configuration as cfg
 
 
@@ -27,18 +24,18 @@ def safety_analysis(model,dataset,layer2Consider,imageIndex,st,index,cl2,gl2,cp)
     originalIndex = copy.deepcopy(index)
     (originalImage,prevSpan,prevNumSpan,numDimsToMani,stepsUpToNow) = st.getInfo(index)
     
-    config = cfg.NN.getConfig(model)
+    config = model.getConfig()
         
     # get weights and bias of the entire trained neural network
-    (wv,bv) = cfg.NN.getWeightVector(model,layer2Consider)
+    (wv,bv) = model.getWeightVector(layer2Consider)
     
     # save the starting layer 
     originalLayer2Consider = copy.deepcopy(layer2Consider)
     
     # predict with neural network
-    (originalSpanass,originalConfident) = cfg.NN.predictWithImage(model,originalImage)
+    (originalSpanass,originalConfident) = model.predict(originalImage)
 
-    classstr = "the right class is " + (str(cfg.dataBasics.LABELS(int(originalSpanass))))
+    classstr = "the right class is " + (str(dataset.labels(int(originalSpanass))))
     print classstr
     classstr = "the confidence is " + (str(originalConfident))
     print classstr
@@ -85,7 +82,7 @@ def safety_analysis(model,dataset,layer2Consider,imageIndex,st,index,cl2,gl2,cp)
     while (not cond) or layer2Consider > 0 :
     
         if layer2Consider == originalLayer2Consider: 
-            activations = cfg.NN.getActivationValue(model,originalLayer2Consider,originalImage)
+            activations = model.getActivationValue(originalLayer2Consider,originalImage)
             activations1 = imageFromGL(activations,counter_numSpan,span)
             cond = equalCounters(counter_numSpan,numSpan)
             
@@ -97,7 +94,7 @@ def safety_analysis(model,dataset,layer2Consider,imageIndex,st,index,cl2,gl2,cp)
         #print "activations1=%s"%(activations1)
 
         # get the type of the current layer
-        layerType = networkBasics.getLayerType(model,layer2Consider)
+        layerType = model.getLayerType(layer2Consider)
         #[ lt for (l,lt) in config if layer2Consider == l ]
         #if len(layerType) > 0: layerType = layerType[0]
         #else: print "cannot find the layerType"
@@ -112,7 +109,7 @@ def safety_analysis(model,dataset,layer2Consider,imageIndex,st,index,cl2,gl2,cp)
             basics.nprint("convolutional layer, back-propagating ...")
             if layer2Consider == 0 : 
                 activations0 = copy.deepcopy(originalImage)
-            else: activations0 = cfg.NN.getActivationValue(model,layer2Consider-1,originalImage)
+            else: activations0 = model.getActivationValue(layer2Consider-1,originalImage)
             string = cfg.directory_pic_string+"/"+str(imageIndex)+"_original_as_"+str(originalSpanass)
             (bl,newInput) = conv_solve_prep(model,cfg.dataBasics,string,originalLayer2Consider,layer2Consider,prevSpan,prevNumSpan,counter_numSpan,numSpan,cp,activations0,wv2Consider,bv2Consider,activations1)
 
@@ -121,7 +118,7 @@ def safety_analysis(model,dataset,layer2Consider,imageIndex,st,index,cl2,gl2,cp)
             basics.nprint("dense layer, back propogation ... ")
             if layer2Consider == 0 : 
                 activations0 = copy.deepcopy(originalImage)
-            else: activations0 = cfg.NN.getActivationValue(model,layer2Consider-1,originalImage)
+            else: activations0 = model.getActivationValue(layer2Consider-1,originalImage)
             string = cfg.directory_pic_string+"/"+str(imageIndex)+"_original_as_"+str(originalSpanass)
             (bl,newInput) = dense_solve_prep(model,cfg.dataBasics,string,prevSpan,prevNumSpan,counter_numSpan,numSpan,cp,activations0,wv2Consider,bv2Consider,activations1)
             
@@ -133,16 +130,11 @@ def safety_analysis(model,dataset,layer2Consider,imageIndex,st,index,cl2,gl2,cp)
             basics.nprint("relu layer, back-propagating ...")
             (bl,newInput) = (True, copy.deepcopy(activations1))
 
-        elif layerType == "ZeroPadding2D":
-            basics.nprint("ZeroPadding2D layer, solving ... ")
-            image1 = cfg.NN.removeZeroPadding2D(activations1)
-            (bl,newInput) = (True,image1)
-
         elif layerType == "MaxPooling2D":
             basics.nprint("MaxPooling2D layer, solving ... ")
             if layer2Consider == 0 : 
                 activations0 = copy.deepcopy(originalImage)
-            else: activations0 = cfg.NN.getActivationValue(model,layer2Consider-1,originalImage)
+            else: activations0 = model.getActivationValue(layer2Consider-1,originalImage)
             image1 = maxpooling_safety_solve(activations0,activations1)
             (bl,newInput) = (True,image1)
 
@@ -150,7 +142,7 @@ def safety_analysis(model,dataset,layer2Consider,imageIndex,st,index,cl2,gl2,cp)
             basics.nprint("Flatten layer, solving ... ")
             if layer2Consider == 0 : 
                 activations0 = copy.deepcopy(originalImage)
-            else: activations0 = cfg.NN.getActivationValue(model,layer2Consider-1,originalImage)
+            else: activations0 = model.getActivationValue(layer2Consider-1,originalImage)
             image1 = flatten_safety_solve(activations0,activations1)
             (bl,newInput) = (True,image1)
             
@@ -183,7 +175,7 @@ def safety_analysis(model,dataset,layer2Consider,imageIndex,st,index,cl2,gl2,cp)
             activations1 = copy.deepcopy(newInput)
             index = st.parentIndexForIntermediateNode(index,layer2Consider)
             basics.nprint("backtrack to index %s in layer %s"%(index,layer2Consider))
-            activations = cfg.NN.getActivationValue(model,layer2Consider,originalImage)
+            activations = model.getActivationValue(layer2Consider,originalImage)
             counter_numSpan = getCounter(activations,newInput,prevSpan,prevNumSpan)
             span = copy.deepcopy(prevSpan)
             numSpan = copy.deepcopy(prevNumSpan)
@@ -197,26 +189,28 @@ def safety_analysis(model,dataset,layer2Consider,imageIndex,st,index,cl2,gl2,cp)
             rs += 1     
             #print "reach input layer"
             
-            if dataset == "imageNet": newInput = normalise(newInput)
+            if dataset.name == "imageNet":
+                newInput = normalise(newInput)
             
             basics.nprint("counter: %s"%counter_numSpans[originalLayer2Consider])
             basics.nprint("input: %s"%newInput)
 
 
-            (newClass,confident) = cfg.NN.predictWithImage(model,newInput)
-            if dataset == "twoDcurve": plt.plot([newInput[0]], [newInput[1]], 'g.')
+            (newClass,confident) = model.predict(newInput)
+            if dataset.name == "twoDcurve":
+                plt.plot([newInput[0]], [newInput[1]], 'g.')
 
             basics.nprint("confident level: " + str(confident))
             # Great! we found an image which has different class with the original image
             if newClass != originalSpanass: 
-                newClassStr = cfg.dataBasics.LABELS(int(newClass))
-                origClassStr = cfg.dataBasics.LABELS(int(originalSpanass))
+                newClassStr = dataset.labels(int(newClass))
+                origClassStr = dataset.labels(int(originalSpanass))
                 classstr = "Class changed! from " + str(origClassStr) +" into " + str(newClassStr)
                 print classstr
                 rk.append((newInput,confident))
 
                 path1 = "%s/%s_%s_modified_into_%s_with_confidence_%s.png"%(cfg.directory_pic_string,imageIndex,origClassStr,newClassStr,confident)
-                cfg.dataBasics.save(index[0],newInput, path1)
+                dataset.save(index[0],newInput, path1)
 
                 # add a point whose class is wrong
                 wk.append(newInput)

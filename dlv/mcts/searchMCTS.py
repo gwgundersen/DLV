@@ -12,7 +12,7 @@ import operator
 import random
 
 from dlv.configuration import configuration as cfg
-from dlv.safety_check.regionSynth import initialiseRegions
+from dlv.safety.regionSynth import initialiseRegions
 
 from dlv.basics.inputManipulation import applyManipulation
 from dlv.basics import basics
@@ -21,7 +21,7 @@ from dlv.basics import basics
 cp = 0.5
 
 
-class searchMCTS:
+class SearchMCTS:
 
     def __init__(self, model, image, k):
         self.image = image
@@ -57,7 +57,7 @@ class searchMCTS:
         # useless points
         self.uselessPixels = []
         
-        (self.originalClass,self.originalConfident) = cfg.NN.predictWithImage(self.model,image)
+        (self.originalClass,self.originalConfident) = self.model.predict(image)
         
     def initialiseActions(self): 
         allChildren = initialiseRegions(self.model,self.image,[])
@@ -188,7 +188,7 @@ class searchMCTS:
     def sampleNext(self,spansPath,numSpansPath,depth,availableActionIDs,usedActionIDs): 
         #print spansPath.keys()
         image1 = applyManipulation(self.image,spansPath,numSpansPath)
-        (newClass,newConfident) = cfg.NN.predictWithImage(self.model,image1)
+        (newClass,newConfident) = self.model.predict(image1)
         #print euclideanDistance(self.image,image1), newConfident, newClass
         (distMethod,distVal) = cfg.controlledSearch
         if distMethod == "euclidean": 
@@ -228,7 +228,7 @@ class searchMCTS:
             
     def terminalNode(self,index): 
         image1 = applyManipulation(self.image,self.spans[index],self.numSpans[index])
-        (newClass,_) = cfg.NN.predictWithImage(self.model,image1)
+        (newClass,_) = self.model.predict(image1)
         return newClass != self.originalClass 
         
     def terminatedByControlledSearch(self,index): 

@@ -7,17 +7,17 @@ author: Xiaowei Huang
 import numpy as np
 import os
 
-import dlv.networks.mnist_network as NN_mnist
-import dlv.networks.cifar10_network as NN_cifar10
-import dlv.networks.imageNet_network as NN_imageNet
-import dlv.networks.twoDcurve_network as NN_twoDcurve
-import dlv.networks.gtsrb_network as NN_gtsrb
+import dlv.nn.mnist_network as NN_mnist
+import dlv.nn.cifar10_network as NN_cifar10
+import dlv.nn.imageNet_network as NN_imageNet
+import dlv.nn.twoDcurve_network as NN_twoDcurve
+import dlv.nn.gtsrb_network as NN_gtsrb
 
-from dlv.networks import mnist
-from dlv.networks import cifar10
-from dlv.networks import imageNet
-from dlv.networks import twoDcurve
-from dlv.networks import gtsrb
+from dlv.nn import mnist
+from dlv.nn import cifar10
+from dlv.nn import imageNet
+from dlv.nn import twoDcurve
+from dlv.nn import gtsrb
 
 def network_parameters(dataset): 
 
@@ -46,7 +46,7 @@ def network_parameters(dataset):
     if dataset == "mnist": 
         NN = NN_mnist
         dataBasics = mnist
-        directory_model_string = makedirectory("dlv/networks/mnist")
+        directory_model_string = makedirectory("dlv/nn/mnist")
         directory_statistics_string = makedirectory("dlv/data/mnist_statistics")
         directory_pic_string = makedirectory("dlv/data/mnist_pic")
         
@@ -59,7 +59,7 @@ def network_parameters(dataset):
     elif dataset == "gtsrb": 
         NN = NN_gtsrb
         dataBasics = gtsrb
-        directory_model_string = makedirectory("dlv/networks/gtsrb")
+        directory_model_string = makedirectory("dlv/nn/gtsrb")
         directory_statistics_string = makedirectory("dlv/data/gtsrb_statistics")
         directory_pic_string = makedirectory("dlv/data/gtsrb_pic")
         
@@ -72,7 +72,7 @@ def network_parameters(dataset):
     elif dataset == "twoDcurve": 
         NN = NN_twoDcurve
         dataBasics = twoDcurve
-        directory_model_string = makedirectory("dlv/networks/twoDcurve")
+        directory_model_string = makedirectory("dlv/nn/twoDcurve")
         directory_statistics_string = makedirectory("dlv/data/twoDcurve_statistics")
         directory_pic_string = makedirectory("dlv/data/twoDcurve_pic")
 
@@ -85,7 +85,7 @@ def network_parameters(dataset):
     elif dataset == "cifar10": 
         NN = NN_cifar10
         dataBasics = cifar10
-        directory_model_string = makedirectory("dlv/networks/cifar10")
+        directory_model_string = makedirectory("dlv/nn/cifar10")
         directory_statistics_string = makedirectory("dlv/data/cifar10_statistics")
         directory_pic_string = makedirectory("dlv/data/cifar10_pic")
  
@@ -98,7 +98,7 @@ def network_parameters(dataset):
     elif dataset == "imageNet": 
         NN = NN_imageNet
         dataBasics = imageNet
-        directory_model_string = makedirectory("dlv/networks/imageNet")
+        directory_model_string = makedirectory("dlv/nn/imageNet")
         directory_statistics_string = makedirectory("dlv/data/imageNet_statistics")
         directory_pic_string = makedirectory("dlv/data/imageNet_pic")
 

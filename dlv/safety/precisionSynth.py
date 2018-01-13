@@ -13,7 +13,6 @@ import math
 from conv_precision_solve import conv_precision_solve
 from dense_precision_solve import dense_precision_solve
 
-from dlv.networks import networkBasics
 from dlv.configuration import configuration as cfg
 from dlv.basics import basics
 
@@ -62,7 +61,7 @@ def precSynthFull(model,image,layer2Consider,span,numSpan,nextSpan,nextNumSpan):
     activations1 = cfg.NN.getActivationValue(model,layer2Consider,image)
 
     # get the type of the current layer
-    layerType = networkBasics.getLayerType(model,layer2Consider)
+    layerType = model.getLayerType(layer2Consider)
     #[ lt for (l,lt) in config if layer2Consider == l ]
     #if len(layerType) > 0: layerType = layerType[0]
     #else: print "cannot find the layerType"

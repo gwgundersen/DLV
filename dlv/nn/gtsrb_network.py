@@ -249,7 +249,7 @@ nb_filters = 32
 # size of pooling area for max pooling
 nb_pool = 2
 # convolution kernel size
-nb_conv = 3
+kernel_size = 3
 
 def read_dataset():
 
@@ -265,7 +265,7 @@ def read_dataset():
     # size of pooling area for max pooling
     nb_pool = 2
     # convolution kernel size
-    nb_conv = 3
+    kernel_size = 3
 
     # the data, shuffled and split between train and test sets
     (X_train, y_train), (X_test, y_test) = mnist.load_data()

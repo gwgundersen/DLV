@@ -2,8 +2,6 @@ import os, struct
 from array import array as pyarray
 import numpy as np
 
-import matplotlib
-import matplotlib.pyplot as plt
 
 NUM_CLASSES = 10
 
@@ -51,7 +49,9 @@ def save(layer,image,filename):
     """
     Render a given numpy.uint8 2D array of pixel data.
     """
+    import matplotlib
     matplotlib.pyplot.switch_backend('agg')
+    import matplotlib.pyplot as plt
 
     fig = plt.figure()
     ax = fig.add_subplot(1,1,1)
@@ -67,7 +67,9 @@ def show(image):
     """
     Render a given numpy.uint8 2D array of pixel data.
     """
+    import matplotlib
     matplotlib.pyplot.switch_backend('agg')
+    import matplotlib.pyplot as plt
 
     fig = plt.figure()
     ax = fig.add_subplot(1,1,1)

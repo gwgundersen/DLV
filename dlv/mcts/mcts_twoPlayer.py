@@ -24,13 +24,14 @@ effectiveConfidenceWhenChanging = 0
 explorationRate = math.sqrt(2)
 
 
-class mcts_twoPlayer:
+class MCTSTwoPlayer:
 
-    def __init__(self, model, autoencoder, image, activations, layer, player_mode):
+    def __init__(self, model, autoencoder, image, activations, layer, player_mode, dataset):
         self.image = image
         self.activations = activations
         self.model = model
         self.autoencoder = autoencoder
+        self.dataset = dataset
 
         # current layer
         self.layer = layer
@@ -96,9 +97,9 @@ class mcts_twoPlayer:
     def predictWithActivations(self,activations):
         if self.layer > -1: 
             output = np.squeeze(self.autoencoder.predict(np.expand_dims(activations,axis=0)))
-            return cfg.NN.predictWithImage(self.model,output)
+            return self.model.predict(output)
         else: 
-            return cfg.NN.predictWithImage(self.model,activations)
+            return self.model.predict(activations)
             
     def visualizationMCTS(self):
         for k in range(len(self.activations)): 
@@ -108,7 +109,7 @@ class mcts_twoPlayer:
             activations1[k] = emptyNode
             output = np.squeeze(self.autoencoder.predict(np.expand_dims(activations1,axis=0)))
             path0="%s/%s_autoencoder_%s.png"%(cfg.directory_pic_string,cfg.startIndexOfImage,k)
-            cfg.dataBasics.save(-1,output, path0)
+            self.dataset.save(-1,output, path0)
             
     def setManipulationType(self,typeStr): 
         self.manipulationType = typeStr 
@@ -376,8 +377,8 @@ class mcts_twoPlayer:
             if self.bestCase[0] < dist: 
                 self.numConverge += 1
                 self.bestCase = (dist,self.spansPath,self.numSpansPath)
-                path0="%s/%s_currentBest_%s_as_%s_with_confidence_%s.png"%(cfg.directory_pic_string,cfg.startIndexOfImage,self.numConverge,cfg.dataBasics.LABELS(int(newClass)),newConfident)
-                cfg.dataBasics.save(-1,activations1,path0)
+                path0="%s/%s_currentBest_%s_as_%s_with_confidence_%s.png"%(cfg.directory_pic_string,cfg.startIndexOfImage,self.numConverge,self.dataset.labels(int(newClass)),newConfident)
+                self.dataset.save(-1,activations1,path0)
 
             return (self.depth == 0, dist)
         elif termByDist == True: 

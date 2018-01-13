@@ -12,27 +12,25 @@ from dense_region_solve import dense_region_solve
 import regionByActivation
 
 from dlv.basics import basics
-from dlv.networks import networkBasics
 from dlv.configuration import configuration as cfg
 
     
 def regionSynth(model,dataset,image,manipulated,layer2Consider,span,numSpan,numDimsToMani):
 
-    config = cfg.NN.getConfig(model)
-
     # get weights and bias of the entire trained neural network
-    (wv,bv) = cfg.NN.getWeightVector(model,layer2Consider)
+    (wv,bv) = model.getWeightVector(layer2Consider)
     
     # get the type of the current layer
-    layerType = networkBasics.getLayerType(model,layer2Consider)
+    layerType = model.getLayerType(layer2Consider)
 
     wv2Consider, bv2Consider = basics.getWeight(wv,bv,layer2Consider)
     
     # get the activations of the previous and the current layer
     if layer2Consider == 0: 
         activations0 = image
-    else: activations0 = cfg.NN.getActivationValue(model,layer2Consider-1,image)
-    activations1 = cfg.NN.getActivationValue(model,layer2Consider,image)
+    else:
+        activations0 = model.getActivationValue(layer2Consider-1, image)
+    activations1 = model.getActivationValue(layer2Consider,image)
 
     if layerType == "Convolution2D" or layerType == "Conv2D":  
         print "convolutional layer, synthesising region ..."
