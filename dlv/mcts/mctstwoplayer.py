@@ -14,7 +14,7 @@ import operator
 
 from dlv.configuration import configuration as cfg
 
-from dlv.basics.inputManipulation import applyManipulation
+from dlv.basics.manipulations import applyManipulation
 from dlv.basics import basics
 from dlv.basics.initialiseSiftKeypoints import initialiseSiftKeypointsTwoPlayer
 from dlv.mcts.re_training import re_training
