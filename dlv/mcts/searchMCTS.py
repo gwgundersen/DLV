@@ -14,7 +14,7 @@ import random
 from dlv.configuration import configuration as cfg
 from dlv.safety.regionSynth import initialiseRegions
 
-from dlv.basics.inputManipulation import applyManipulation
+from dlv.basics.manipulations import applyManipulation
 from dlv.basics import basics
 
 # tunable parameter for MCTS

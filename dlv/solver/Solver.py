@@ -5,17 +5,17 @@ import time
 
 from dlv.safety.regionSynth import regionSynth
 from dlv.safety.precisionSynth import precisionSynth
-from dlv.safety.safety_analysis import safety_analysis
+from dlv.safety.safetyanalysis import safety_analysis
 
 from dlv.configuration import configuration as cfg
 from dlv.basics import basics
 
-from dlv.basics.searchTree import SearchTree
-from dlv.mcts.searchMCTS import SearchMCTS
-from dlv.mcts.mcts_twoPlayer import MCTSTwoPlayer
-from dlv.basics.dataCollection import DataCollection
+from dlv.basics.searchtree import SearchTree
+from dlv.mcts.searchmcts import SearchMCTS
+from dlv.mcts.mctstwoplayer import MCTSTwoPlayer
+from dlv.basics.datacollection import DataCollection
 
-from dlv.basics.inputManipulation import applyManipulation
+from dlv.basics.manipulations import applyManipulation
 
 # ------------------------------------------------------------------------------
 

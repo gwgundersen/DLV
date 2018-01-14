@@ -30,6 +30,7 @@ class NN(object):
             return 'Input'
         else:
             config = self.getConfig()
+            import pdb; pdb.set_trace()
             # Get the type of the current layer.
             layerType = [lt for (l, lt) in config if layer2Consider == l]
             if len(layerType) > 0:
