@@ -1,5 +1,8 @@
 import numpy as np
 import torch
+import torch.nn as nn
+import torch.nn.functional as F
+from torch.autograd import Variable
 from torch.utils.serialization import load_lua
 from dlv.nn.nn import NN
 
@@ -9,6 +12,7 @@ class SvhnNN(NN):
 
     def __init__(self):
         self.define()
+        self.loss = nn.CrossEntropyLoss()
         print(self.model)
 
 # ------------------------------------------------------------------------------
@@ -22,7 +26,10 @@ class SvhnNN(NN):
         batch    = torch.Tensor(1, 3, 32, 32)
         batch[0] = torch.Tensor(x)
         y = self.model.forward(batch)
-        y = y.clone().numpy()
-        class_ = np.argmax(np.ravel(y))
-        confidence = np.amax(np.ravel(y))
+
+        prob_dist = F.softmax(Variable(y), dim=1)
+        prob_dist = prob_dist.data.clone().numpy()
+
+        class_ = np.argmax(np.ravel(prob_dist))
+        confidence = np.amax(np.ravel(prob_dist))
         return class_, confidence
