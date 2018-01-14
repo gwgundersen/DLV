@@ -16,16 +16,20 @@ from dlv.mcts.mcts_twoPlayer import MCTSTwoPlayer
 from dlv.basics.dataCollection import DataCollection
 
 from dlv.basics.inputManipulation import applyManipulation
-from dlv.nn.mnistnn import MnistNN
-from dlv.datasets.mnistdata import MnistData
+# from dlv.nn.mnistnn import MnistNN
+# from dlv.datasets.mnistdata import MnistData
+from dlv.nn.svhnnn import SvhnNN
+from dlv.datasets.svhndata import SvhnData
 
 # ------------------------------------------------------------------------------
 
 def verify():
     """
     """
-    model   = MnistNN()
-    dataset = MnistData()
+    model = SvhnNN()
+    dataset = SvhnData()
+    # model   = MnistNN()
+    # dataset = MnistData()
     dc      = DataCollection()
 
     n_succ = 0

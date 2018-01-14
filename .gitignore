@@ -8,3 +8,4 @@ __pycache__/
 
 # Generated images
 dlv/data/
+dlv/datasets/svhn_raw/

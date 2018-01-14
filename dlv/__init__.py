@@ -1,1 +1,1 @@
-from solver import verify
+from solver.Solver import Solver
