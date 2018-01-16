@@ -1,5 +1,5 @@
 from dlv import Solver
-from dlv.nn import SvhnModel
+from dlv.nn import SvhnModel, MnistModel
 from dlv.datasets import SvhnData, MnistData
 
 model   = SvhnModel()

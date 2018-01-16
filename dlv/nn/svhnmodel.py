@@ -31,5 +31,14 @@ class SvhnModel(Model):
         prob_dist = prob_dist.data.clone().numpy()
 
         class_ = np.argmax(np.ravel(prob_dist))
+
+        # SVHN documentation:
+        #
+        #     10 classes, 1 for each digit. Digit '1' has label 1, '9' has label
+        #     9 and '0' has label 10.
+        class_ = class_ + 1
+
         confidence = np.amax(np.ravel(prob_dist))
+        assert(0 <= confidence <= 1)
+        assert(1 <= class_ <= 10)
         return class_, confidence

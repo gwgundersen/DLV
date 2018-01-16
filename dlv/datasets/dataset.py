@@ -25,7 +25,6 @@ class Dataset(object):
     def save(self, layer, image, filename):
         """Save a given numpy.uint8 2D array of pixel data.
         """
-        # FIXME: Do not use matplotlib.
         matplotlib.pyplot.switch_backend('agg')
 
         fig = plt.figure()

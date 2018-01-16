@@ -30,7 +30,6 @@ class Model(object):
             return 'Input'
         else:
             config = self.getConfig()
-            import pdb; pdb.set_trace()
             # Get the type of the current layer.
             layerType = [lt for (l, lt) in config if layer2Consider == l]
             if len(layerType) > 0:
@@ -63,7 +62,6 @@ class Model(object):
 # ------------------------------------------------------------------------------
 
     def getActivations(self, layer, X_batch):
-        import pdb; pdb.set_trace()
         get_activations_fn = K.function(
             [self.model.layers[0].input, K.learning_phase()],
             self.model.layers[layer].output
