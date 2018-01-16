@@ -29,9 +29,9 @@ class Solver(object):
         _verify(self.model, self.dataset)
 
     def example(self):
-        from dlv.nn.mnistnn import MnistNN
+        from dlv.nn.mnistmodel import MnistModel
         from dlv.datasets.mnistdata import MnistData
-        _verify(MnistNN(), MnistData())
+        _verify(MnistModel(), MnistData())
 
 # ------------------------------------------------------------------------------
 

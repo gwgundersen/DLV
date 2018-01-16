@@ -60,6 +60,7 @@ class SvhnData(Dataset):
     def save(self, layer, image, filename):
         """Save a given numpy.uint8 2D array of pixel data.
         """
+        image = self.normalize(image)
         matplotlib.pyplot.switch_backend('agg')
 
         fig = plt.figure()
@@ -71,3 +72,8 @@ class SvhnData(Dataset):
         ax.xaxis.set_ticks_position('top')
         ax.yaxis.set_ticks_position('left')
         plt.savefig(filename)
+
+    def normalize(self, image):
+        min_ = image.min()
+        max_ = image.max()
+        return (image - min_) / (max_ - min_)

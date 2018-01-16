@@ -3,7 +3,7 @@ import numpy as np
 
 # ------------------------------------------------------------------------------
 
-class NN(object):
+class Model(object):
 
     def __init__(self):
         pass
@@ -63,6 +63,7 @@ class NN(object):
 # ------------------------------------------------------------------------------
 
     def getActivations(self, layer, X_batch):
+        import pdb; pdb.set_trace()
         get_activations_fn = K.function(
             [self.model.layers[0].input, K.learning_phase()],
             self.model.layers[layer].output

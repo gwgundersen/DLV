@@ -4,11 +4,11 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import Variable
 from torch.utils.serialization import load_lua
-from dlv.nn.nn import NN
+from dlv.nn.model import Model
 
 # ------------------------------------------------------------------------------
 
-class SvhnNN(NN):
+class SvhnModel(Model):
 
     def __init__(self):
         self.define()

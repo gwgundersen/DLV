@@ -1,2 +1,2 @@
-from mnistnn import MnistNN
-from svhnnn import SvhnNN
+from mnistmodel import MnistModel
+from svhnmodel import SvhnModel

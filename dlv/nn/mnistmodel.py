@@ -7,12 +7,12 @@ from keras.layers import Convolution2D, MaxPooling2D
 from keras import backend as K
 import numpy as np
 
-from dlv.nn.nn import NN
+from dlv.nn.model import Model
 
 
 # ------------------------------------------------------------------------------
 
-class MnistNN(NN):
+class MnistModel(Model):
     DIRECTORY = 'dlv/nn/mnist'
 
     def __init__(self):
