@@ -9,3 +9,9 @@ __pycache__/
 # Generated images
 dlv/data/
 dlv/datasets/svhn_raw/
+
+# Output file specified in the example.
+out/
+
+# Directory made by the configuration file.
+dlv/networks/

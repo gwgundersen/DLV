@@ -6,5 +6,4 @@ model   = SvhnModel()
 dataset = SvhnData()
 
 s = Solver(model, dataset)
-s.verify()
-
+s.verify(out_dir='out', idx=100)

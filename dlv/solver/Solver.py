@@ -27,7 +27,9 @@ class Solver(object):
         self.dataset = dataset
         self.n_samples = len(dataset.X_train)
 
-    def verify(self, out_dir='out', idx=None):
+    def verify(self, out_dir, idx):
+        if not out_dir:
+            raise AttributeError('Please provide an output directory.')
         mkdir(out_dir)
         cfg.directory_pic_string = out_dir
         if not idx:
