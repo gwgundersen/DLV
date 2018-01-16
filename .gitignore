@@ -15,3 +15,10 @@ out/
 
 # Directory made by the configuration file.
 dlv/networks/
+
+# Pretrained networks. They take up GBs of storage:
+dlv/nn/cifar10
+dlv/nn/dlv
+dlv/nn/gtsrb
+dlv/nn/mnist
+dlv/nn/twoDcurve
