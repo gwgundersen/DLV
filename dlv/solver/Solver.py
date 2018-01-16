@@ -1,4 +1,5 @@
 import copy
+import os
 import numpy as np
 import random
 import time
@@ -24,14 +25,30 @@ class Solver(object):
     def __init__(self, model, dataset):
         self.model = model
         self.dataset = dataset
+        self.n_samples = len(dataset.X_train)
 
-    def verify(self):
-        _verify(self.model, self.dataset)
+    def verify(self, out_dir='out', idx=None):
+        mkdir(out_dir)
+        cfg.directory_pic_string = out_dir
+        if not idx:
+            for i in range(self.n_samples):
+                cfg.startIndexOfImage = i
+                _verify(self.model, self.dataset)
+        else:
+            cfg.startIndexOfImage = idx
+            _verify(self.model, self.dataset)
 
     def example(self):
         from dlv.nn.mnistmodel import MnistModel
         from dlv.datasets.mnistdata import MnistData
         _verify(MnistModel(), MnistData())
+
+# ------------------------------------------------------------------------------
+
+def mkdir(name):
+    if not os.path.exists(name):
+        os.makedirs(name)
+    return name
 
 # ------------------------------------------------------------------------------
 
