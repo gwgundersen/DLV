@@ -42,7 +42,6 @@ class Model(object):
 # ------------------------------------------------------------------------------
 
     def getConfig(self):
-        import pdb; pdb.set_trace()
         config = self.model.get_config()
         if 'layers' in config:
             config = config['layers']

@@ -17,10 +17,10 @@ class SvhnData(Dataset):
 
     name = 'svhn'
 
-    def __init__(self):
+    def __init__(self, download=False):
         SUBDIR = '/Users/gwg/dlv/dlv/datasets/svhn_raw/'
-        train = SvhnLoader(SUBDIR, split='train')
-        test  = SvhnLoader(SUBDIR, split='test')
+        train = SvhnLoader(SUBDIR, split='train', download=download)
+        test  = SvhnLoader(SUBDIR, split='test', download=download)
         self.X_train = train.data / 255.0
         self.Y_train = train.labels
         self.X_test  = test.data / 255.0

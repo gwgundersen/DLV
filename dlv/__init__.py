@@ -1,1 +1,1 @@
-from solver.Solver import Solver
+from dlv.solver.Solver import Solver
